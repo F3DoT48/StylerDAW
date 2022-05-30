@@ -10,6 +10,11 @@
 
 #include <JuceHeader.h>
 #include "EditComponent.h"
+#include "TrackComponentArranger.h"
+#include "TrackComponentChord.h"
+#include "TrackComponentMarker.h"
+#include "TrackComponentMaster.h"
+#include "TrackComponentTempo.h"
 
 using namespace styler_app;
 
@@ -95,9 +100,25 @@ void EditComponent::buildTracks ()
     {
         if (track->isMasterTrack ())
         {
-            tmpTrackComponent = new TrackComponent (mEditViewState, track); // MasterTrackComponent?
+            tmpTrackComponent = new TrackComponentMaster (mEditViewState, track);
         }
-        else
+        else if (track->isArrangerTrack())
+        {
+            tmpTrackComponent = new TrackComponentArranger (mEditViewState, track);
+        }
+        else if (track->isTempoTrack())
+        {
+            tmpTrackComponent = new TrackComponentTempo (mEditViewState, track);
+        }
+        else if (track->isMarkerTrack())
+        {
+            tmpTrackComponent = new TrackComponentMarker (mEditViewState, track);
+        }
+        else if (track->isChordTrack())
+        {
+            tmpTrackComponent = new TrackComponentChord (mEditViewState, track);
+        }
+        else 
         {
             tmpTrackComponent = new TrackComponent (mEditViewState, track);
         }

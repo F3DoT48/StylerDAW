@@ -11,7 +11,6 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "StylerTracktionEngineBehaviour.h"
 #include "EditViewState.h"
 
 namespace te = tracktion_engine;
@@ -20,7 +19,7 @@ namespace styler_app
 {
     struct TrackComponentAttributes
     {
-        int heightInPixels{ 40 };
+        int heightInPixels{ 80 };
         int mixerParametersAreaWidth{ 100 };
         int arrangementPartWidthInPixels{ 100 };
         int pluginAreaWidthInPixels{ 100 };
@@ -37,10 +36,11 @@ namespace styler_app
 
         static TrackComponentAttributes getAttributes() noexcept;
 
+        te::Track::Ptr getTrack() noexcept;
+
     private:
         EditViewState& mEditViewState;
         te::Track::Ptr mTrack;
-
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TrackComponent)
     };

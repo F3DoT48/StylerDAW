@@ -58,3 +58,8 @@ TrackComponentAttributes TrackComponent::getAttributes () noexcept
 {
     return {};
 }
+
+te::Track::Ptr TrackComponent::getTrack () noexcept
+{
+    return mTrack;
+}

@@ -6,6 +6,30 @@
   <MAINGROUP id="dKXk2I" name="Styler">
     <GROUP id="{193BEC45-31AE-BA32-125F-DDB153D83742}" name="Source">
       <GROUP id="{58B67417-1632-C97D-B36B-7D4F982C74A6}" name="UIComponents">
+        <FILE id="luwwpQ" name="TrackComponentEmpty.cpp" compile="1" resource="0"
+              file="Source/TrackComponentEmpty.cpp"/>
+        <FILE id="hGL1DL" name="TrackComponentEmpty.h" compile="0" resource="0"
+              file="Source/TrackComponentEmpty.h"/>
+        <FILE id="JNQf7j" name="TrackComponentChord.cpp" compile="1" resource="0"
+              file="Source/TrackComponentChord.cpp"/>
+        <FILE id="bWzWss" name="TrackComponentChord.h" compile="0" resource="0"
+              file="Source/TrackComponentChord.h"/>
+        <FILE id="zXa0Zo" name="TrackComponentArranger.cpp" compile="1" resource="0"
+              file="Source/TrackComponentArranger.cpp"/>
+        <FILE id="dKd0vX" name="TrackComponentArranger.h" compile="0" resource="0"
+              file="Source/TrackComponentArranger.h"/>
+        <FILE id="bqke4f" name="TrackComponentMarker.cpp" compile="1" resource="0"
+              file="Source/TrackComponentMarker.cpp"/>
+        <FILE id="xnmM8U" name="TrackComponentMarker.h" compile="0" resource="0"
+              file="Source/TrackComponentMarker.h"/>
+        <FILE id="VZB2oV" name="TrackComponentTempo.cpp" compile="1" resource="0"
+              file="Source/TrackComponentTempo.cpp"/>
+        <FILE id="EJBHza" name="TrackComponentTempo.h" compile="0" resource="0"
+              file="Source/TrackComponentTempo.h"/>
+        <FILE id="OLBnp9" name="TrackComponentMaster.cpp" compile="1" resource="0"
+              file="Source/TrackComponentMaster.cpp"/>
+        <FILE id="FzmaTC" name="TrackComponentMaster.h" compile="0" resource="0"
+              file="Source/TrackComponentMaster.h"/>
         <FILE id="skdk6O" name="CommandIDs.h" compile="0" resource="0" file="Source/CommandIDs.h"/>
         <FILE id="CG0Gw9" name="MainComponentMenuBar.cpp" compile="1" resource="0"
               file="Source/MainComponentMenuBar.cpp"/>
