@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="dfsDxf" name="Styler" projectType="guiapp" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              cppLanguageStandard="latest" defines="JUCE_MODAL_LOOPS_PERMITTED=1">
+  <MAINGROUP id="dKXk2I" name="Styler">
+    <GROUP id="{193BEC45-31AE-BA32-125F-DDB153D83742}" name="Source">
+      <GROUP id="{58B67417-1632-C97D-B36B-7D4F982C74A6}" name="UIComponents">
+        <FILE id="skdk6O" name="CommandIDs.h" compile="0" resource="0" file="Source/CommandIDs.h"/>
+        <FILE id="CG0Gw9" name="MainComponentMenuBar.cpp" compile="1" resource="0"
+              file="Source/MainComponentMenuBar.cpp"/>
+        <FILE id="mM5FQ6" name="MainComponentMenuBar.h" compile="0" resource="0"
+              file="Source/MainComponentMenuBar.h"/>
+        <FILE id="h2uozs" name="EditViewState.cpp" compile="1" resource="0"
+              file="Source/EditViewState.cpp"/>
+        <FILE id="Uz7cPH" name="EditViewState.h" compile="0" resource="0" file="Source/EditViewState.h"/>
+        <FILE id="CsKNLI" name="ArrangementPartComponent.cpp" compile="1" resource="0"
+              file="Source/ArrangementPartComponent.cpp"/>
+        <FILE id="ayK5Up" name="ArrangementPartComponent.h" compile="0" resource="0"
+              file="Source/ArrangementPartComponent.h"/>
+        <FILE id="qISI6t" name="MixerParametersAreaComponent.cpp" compile="1"
+              resource="0" file="Source/MixerParametersAreaComponent.cpp"/>
+        <FILE id="mZJZAs" name="MixerParametersAreaComponent.h" compile="0"
+              resource="0" file="Source/MixerParametersAreaComponent.h"/>
+        <FILE id="Yfn07c" name="TrackComponent.cpp" compile="1" resource="0"
+              file="Source/TrackComponent.cpp"/>
+        <FILE id="pPZVSv" name="TrackComponent.h" compile="0" resource="0"
+              file="Source/TrackComponent.h"/>
+        <FILE id="mXoO6s" name="EditComponent.cpp" compile="1" resource="0"
+              file="Source/EditComponent.cpp"/>
+        <FILE id="fiqyaT" name="EditComponent.h" compile="0" resource="0" file="Source/EditComponent.h"/>
+        <FILE id="LP17Yc" name="StylerMainComponent.h" compile="0" resource="0"
+              file="Source/StylerMainComponent.h"/>
+        <FILE id="XfBh9u" name="StylerMainComponent.cpp" compile="1" resource="0"
+              file="Source/StylerMainComponent.cpp"/>
+      </GROUP>
+      <GROUP id="{DBB64C67-AA12-FF26-85C0-956FF05620A0}" name="TracktionEngineCustomization">
+        <FILE id="OoNVnD" name="Utilities.h" compile="0" resource="0" file="Source/Utilities.h"/>
+        <FILE id="lfBFUc" name="StylerTracktionEngineBehaviour.h" compile="0"
+              resource="0" file="Source/StylerTracktionEngineBehaviour.h"/>
+        <FILE id="B44ppP" name="StylerTracktionEngineBehaviour.cpp" compile="1"
+              resource="0" file="Source/StylerTracktionEngineBehaviour.cpp"/>
+        <FILE id="IUzDQm" name="StylerUIBehaviour.h" compile="0" resource="0"
+              file="Source/StylerUIBehaviour.h"/>
+        <FILE id="wemMGM" name="StylerUIBehaviour.cpp" compile="1" resource="0"
+              file="Source/StylerUIBehaviour.cpp"/>
+      </GROUP>
+      <FILE id="uYUL7H" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <EXPORTFORMATS>
+    <VS2022 targetFolder="Builds/VisualStudio2022">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="NewProject"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="NewProject"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../JUCE/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../JUCE/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../JUCE/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../JUCE/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../JUCE/JUCE/modules"/>
+        <MODULEPATH id="tracktion_engine" path="..\TracktionEngine\tracktion_engine-develop\modules\tracktion_engine"/>
+        <MODULEPATH id="juce_audio_devices" path="../../TracktionEngine/tracktion_engine-develop/modules/juce/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../TracktionEngine/tracktion_engine-develop/modules/juce/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../TracktionEngine/tracktion_engine-develop/modules/juce/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../TracktionEngine/tracktion_engine-develop/modules/juce/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../TracktionEngine/tracktion_engine-develop/modules/juce/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../TracktionEngine/tracktion_engine-develop/modules/juce/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../TracktionEngine/tracktion_engine-develop/modules/juce/modules"/>
+        <MODULEPATH id="juce_osc" path="../../TracktionEngine/tracktion_engine-develop/modules/juce/modules"/>
+        <MODULEPATH id="tracktion_graph" path="../TracktionEngine/tracktion_engine-develop/modules"/>
+      </MODULEPATHS>
+    </VS2022>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="tracktion_engine" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="tracktion_graph" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+  </MODULES>
+</JUCERPROJECT>
