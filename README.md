@@ -1,5 +1,8 @@
 # StylerDAW
-A loop-based DAW with patterns that respond to real time chord changes.
+
+___Work in progress___
+
+A loop-based DAW with patterns that respond to real time chord changes. 
 
 # To do:
 
@@ -13,4 +16,4 @@ A loop-based DAW with patterns that respond to real time chord changes.
 
 # Requirements
 - [___JUCE___](https://github.com/juce-framework/JUCE) - 6.1.6 or above
-- [___Tracktion_engine___](https://github.com/Tracktion/tracktion_engine) - develop - 1.2.0
+- [___Tracktion engine___](https://github.com/Tracktion/tracktion_engine) - develop - 1.2.0
