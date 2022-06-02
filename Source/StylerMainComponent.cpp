@@ -34,6 +34,11 @@ StylerMainComponent::StylerMainComponent()
     addKeyListener (mCommandManager.getKeyMappings());
     setWantsKeyboardFocus (true);
 
+    mEdit->deleteTrack (mEdit->getArrangerTrack());
+    mEdit->deleteTrack (mEdit->getMarkerTrack());
+
+    mEdit->getUndoManager().clearUndoHistory();
+
     addAndMakeVisible (mMenuBar.get());
 
     setSize (600, 400);

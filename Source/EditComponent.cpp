@@ -102,18 +102,18 @@ void EditComponent::buildTracks ()
         {
             tmpTrackComponent = new TrackComponentMaster (mEditViewState, track);
         }
-        else if (track->isArrangerTrack())
+        /*else if (track->isArrangerTrack())
         {
             tmpTrackComponent = new TrackComponentArranger (mEditViewState, track);
-        }
+        }*/
         else if (track->isTempoTrack())
         {
             tmpTrackComponent = new TrackComponentTempo (mEditViewState, track);
         }
-        else if (track->isMarkerTrack())
+        /*else if (track->isMarkerTrack())
         {
             tmpTrackComponent = new TrackComponentMarker (mEditViewState, track);
-        }
+        }*/
         else if (track->isChordTrack())
         {
             tmpTrackComponent = new TrackComponentChord (mEditViewState, track);
