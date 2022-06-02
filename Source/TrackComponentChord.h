@@ -11,13 +11,13 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "TrackComponentEmpty.h"
+#include "TrackComponent.h"
 
 namespace te = tracktion_engine;
 
 namespace styler_app
 {
-    class TrackComponentChord : public TrackComponentEmpty
+    class TrackComponentChord : public TrackComponent
     {
     public:
         TrackComponentChord (EditViewState&, te::Track::Ptr);

@@ -13,7 +13,7 @@
 using namespace styler_app;
 
 TrackComponentChord::TrackComponentChord (EditViewState& state, te::Track::Ptr track)
-    : TrackComponentEmpty (state, track)
+    : TrackComponent (state, track)
 {
 
 }
