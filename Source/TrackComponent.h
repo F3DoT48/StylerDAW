@@ -19,10 +19,14 @@ namespace styler_app
 {
     struct TrackComponentAttributes
     {
-        int heightInPixels{ 80 };
-        int mixerParametersAreaWidth{ 100 };
-        int arrangementPartWidthInPixels{ 100 };
-        int pluginAreaWidthInPixels{ 100 };
+        static constexpr int minimumHeightInPixels{ 80 };
+        static constexpr int trackGapInPixels{ 2 };
+        static constexpr int mixerParametersAreaWidth{ 100 };
+        static constexpr int arrangementPartWidthInPixels{ 100 };
+        static constexpr int pluginAreaWidthInPixels{ 100 };
+
+        static constexpr  int newTrackButtonOffsetFromRight{ 150 };
+        static constexpr  int newTrackButtonHeight{ 30 };
     };
 
     class TrackComponent : public juce::Component
@@ -34,13 +38,13 @@ namespace styler_app
         void paint(juce::Graphics&) override;
         void resized() override;
 
-        static TrackComponentAttributes getAttributes() noexcept;
-
         te::Track::Ptr getTrack() noexcept;
 
-    private:
+    protected:
         EditViewState& mEditViewState;
         te::Track::Ptr mTrack;
+
+    private:
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TrackComponent)
     };

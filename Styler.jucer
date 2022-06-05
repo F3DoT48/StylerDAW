@@ -6,6 +6,22 @@
   <MAINGROUP id="dKXk2I" name="Styler">
     <GROUP id="{193BEC45-31AE-BA32-125F-DDB153D83742}" name="Source">
       <GROUP id="{58B67417-1632-C97D-B36B-7D4F982C74A6}" name="UIComponents">
+        <FILE id="PG0ubk" name="MixerControlsAreaComponent.cpp" compile="1"
+              resource="0" file="Source/MixerControlsAreaComponent.cpp"/>
+        <FILE id="B87S37" name="MixerControlsAreaComponent.h" compile="0" resource="0"
+              file="Source/MixerControlsAreaComponent.h"/>
+        <FILE id="UcncIF" name="PluginsAreaComponent.cpp" compile="1" resource="0"
+              file="Source/PluginsAreaComponent.cpp"/>
+        <FILE id="JdaFFV" name="PluginsAreaComponent.h" compile="0" resource="0"
+              file="Source/PluginsAreaComponent.h"/>
+        <FILE id="eGhJsJ" name="ArrangerAreaComponent.cpp" compile="1" resource="0"
+              file="Source/ArrangerAreaComponent.cpp"/>
+        <FILE id="pwpSVL" name="ArrangerAreaComponent.h" compile="0" resource="0"
+              file="Source/ArrangerAreaComponent.h"/>
+        <FILE id="blYBJC" name="InputsAreaComponent.cpp" compile="1" resource="0"
+              file="Source/InputsAreaComponent.cpp"/>
+        <FILE id="aZwXMr" name="InputsAreaComponent.h" compile="0" resource="0"
+              file="Source/InputsAreaComponent.h"/>
         <FILE id="luwwpQ" name="TrackComponentEmpty.cpp" compile="1" resource="0"
               file="Source/TrackComponentEmpty.cpp"/>
         <FILE id="hGL1DL" name="TrackComponentEmpty.h" compile="0" resource="0"

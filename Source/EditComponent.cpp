@@ -62,12 +62,11 @@ void EditComponent::paint (juce::Graphics& g)
 
 void EditComponent::resized()
 {
-    const int trackGap{ 2 };
-    int verticalOffset {100};
+    int verticalOffset {0};
     for (auto track : mTracks)
     {
-        track->setBounds (0, verticalOffset, getWidth(), track->getAttributes().heightInPixels);
-        verticalOffset += track->getAttributes().heightInPixels + trackGap;
+        track->setBounds (0, verticalOffset, getWidth(), TrackComponentAttributes::minimumHeightInPixels);
+        verticalOffset += TrackComponentAttributes::minimumHeightInPixels + TrackComponentAttributes::trackGapInPixels;
     }
 
     for (auto track : mTracks)
@@ -75,15 +74,11 @@ void EditComponent::resized()
         track->resized();
     }
 
-    const int buttonOffsetFromRight{ 150 };
-    const int buttonHeight{ 30 };
-
-    mNewTrackButton->setBounds (getWidth() - buttonOffsetFromRight
+    mNewTrackButton->setBounds (getWidth() - TrackComponentAttributes::newTrackButtonOffsetFromRight
                               , verticalOffset
                               , mNewTrackButton->getLookAndFeel().getTextButtonWidthToFitText (*mNewTrackButton
-                                                                                             , buttonHeight)
-                              , buttonHeight);
-
+                                                                                             , TrackComponentAttributes::newTrackButtonHeight)
+                              , TrackComponentAttributes::newTrackButtonHeight);
 }
 
 EditViewState& EditComponent::getEditViewState()
@@ -91,14 +86,14 @@ EditViewState& EditComponent::getEditViewState()
     return mEditViewState;
 }
 
-void EditComponent::buildTracks ()
+void EditComponent::buildTracks()
 {
     mTracks.clear();
     TrackComponent* tmpTrackComponent{ nullptr };
 
     for (auto track : getAllTracks (mEdit))
     {
-        if (track->isMasterTrack ())
+        if (track->isMasterTrack())
         {
             tmpTrackComponent = new TrackComponentMaster (mEditViewState, track);
         }
@@ -168,5 +163,8 @@ void EditComponent::setupNewTrackButton ()
     mNewTrackButton->onClick = [this]
     {
         mEdit.ensureNumberOfAudioTracks (getAudioTracks (mEdit).size() + 1);
+        auto rect{ getBounds() };
+        rect.setBottom (rect.getBottom() + TrackComponentAttributes::trackGapInPixels + TrackComponentAttributes::minimumHeightInPixels);
+        setBounds (rect);        
     };
 }

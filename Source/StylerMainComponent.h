@@ -36,6 +36,7 @@ namespace styler_app
         juce::ApplicationCommandManager mCommandManager;
 
         std::unique_ptr<styler_app::EditComponent> mEditComponent;
+        std::unique_ptr<juce::Viewport> mEditComponentViewport;
         std::unique_ptr<styler_app::MainComponentMenuBar> mMenuBar;
 
         void changeListenerCallback (juce::ChangeBroadcaster*) override;

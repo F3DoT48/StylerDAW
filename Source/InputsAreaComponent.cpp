@@ -1,33 +1,31 @@
 /*
   ==============================================================================
 
-    TrackComponent.cpp
-    Created: 2 May 2022 8:26:17pm
+    InputsAreaComponent.cpp
+    Created: 4 Jun 2022 10:36:47pm
     Author:  User
 
   ==============================================================================
 */
 
 #include <JuceHeader.h>
-#include "TrackComponent.h"
+#include "InputsAreaComponent.h"
 
 using namespace styler_app;
 
 //==============================================================================
-TrackComponent::TrackComponent (EditViewState& editViewState, te::Track::Ptr track)
-    : mEditViewState{ editViewState }
-    , mTrack{ track }
+
+styler_app::InputsAreaComponent::InputsAreaComponent (EditViewState& editViewState, te::Track::Ptr track)
+    : TrackComponent (editViewState, track)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
 
 }
 
-TrackComponent::~TrackComponent()
+InputsAreaComponent::~InputsAreaComponent()
 {
 }
 
-void TrackComponent::paint (juce::Graphics& g)
+void InputsAreaComponent::paint (juce::Graphics& g)
 {
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
@@ -37,17 +35,14 @@ void TrackComponent::paint (juce::Graphics& g)
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
     g.drawText (mTrack->getName()
-              , getLocalBounds ()
+              , getLocalBounds()
               , juce::Justification::centred
               , true);
 }
 
-void TrackComponent::resized()
+void InputsAreaComponent::resized()
 {
 
-}
 
-te::Track::Ptr TrackComponent::getTrack() noexcept
-{
-    return mTrack;
+
 }

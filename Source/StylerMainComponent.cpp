@@ -11,6 +11,7 @@ StylerMainComponent::StylerMainComponent()
                       , std::make_unique<styler_app::StylerUIBehaviour>()
                       , std::make_unique<styler_app::StylerTracktionEngineBehaviour>() }
     , mSelectionManager{ mTracktionEngine }
+    , mEditComponentViewport{ std::make_unique<juce::Viewport> ("EditComponentViewport") }
     , mMenuBar{ std::make_unique<styler_app::MainComponentMenuBar> (mCommandManager) }
 {
     auto directory = juce::File::getSpecialLocation (juce::File::tempDirectory).getChildFile ("Styler");
@@ -39,9 +40,13 @@ StylerMainComponent::StylerMainComponent()
 
     mEdit->getUndoManager().clearUndoHistory();
 
+    mEditComponentViewport->setViewedComponent (mEditComponent.get());
+
+    addAndMakeVisible (mEditComponentViewport.get());
+
     addAndMakeVisible (mMenuBar.get());
 
-    setSize (600, 400);
+    setSize (1024, 768);
 }
 
 StylerMainComponent::~StylerMainComponent()
@@ -71,7 +76,15 @@ void StylerMainComponent::resized()
 
     if (mEditComponent != nullptr)
     {
+        //rectangle.setBottom (2000);
+        rectangle.setBottom (rectangle.getY()
+                           + mEdit->getTrackList().size()
+                           * (TrackComponentAttributes::minimumHeightInPixels 
+                            + TrackComponentAttributes::trackGapInPixels)
+                           + TrackComponentAttributes::newTrackButtonHeight);
+
         mEditComponent->setBounds (rectangle);
+        mEditComponentViewport->setBounds (rectangle.removeFromTop (500));
     }
 }
 
@@ -221,7 +234,9 @@ void StylerMainComponent::createOrLoadEdit (juce::File editFile = {})
 
     mEditComponent = std::make_unique<EditComponent> (*mEdit, mSelectionManager);
 
-    addAndMakeVisible (*mEditComponent);
+    addChildComponent (mEditComponent.get());
+
+    //addAndMakeVisible (*mEditComponent);
 }
 
 void StylerMainComponent::enableAllInputs()
