@@ -21,12 +21,13 @@ namespace styler_app
     {
         static constexpr int minimumHeightInPixels{ 80 };
         static constexpr int trackGapInPixels{ 2 };
-        static constexpr int mixerParametersAreaWidth{ 100 };
-        static constexpr int arrangementPartWidthInPixels{ 100 };
-        static constexpr int pluginAreaWidthInPixels{ 100 };
+        static constexpr int inputsAreaWidthInPixels{ 200 };
+        static constexpr int mixerControlsParametersAreaWidthInPixels{ 200 };
+        static constexpr int arrangementPartWidthInPixels{ 200 };
+        static constexpr int pluginAreaWidthInPixels{ 200 };
 
-        static constexpr  int newTrackButtonOffsetFromRight{ 150 };
-        static constexpr  int newTrackButtonHeight{ 30 };
+        static constexpr int newTrackButtonOffsetFromRight{ 150 };
+        static constexpr int newTrackButtonHeight{ 30 };
     };
 
     class TrackComponent : public juce::Component

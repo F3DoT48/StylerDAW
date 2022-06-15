@@ -11,41 +11,36 @@
 #include <JuceHeader.h>
 #include "MixerControlsAreaComponent.h"
 
+using namespace styler_app;
+
 //==============================================================================
-MixerControlsAreaComponent::MixerControlsAreaComponent()
+MixerControlsAreaComponent::MixerControlsAreaComponent(EditViewState& editViewState, te::Track::Ptr track)
+    : TrackComponent (editViewState, track)
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
 
 }
 
 MixerControlsAreaComponent::~MixerControlsAreaComponent()
 {
+
 }
 
 void MixerControlsAreaComponent::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
-
-       You should replace everything in this method with your own
-       drawing code..
-    */
-
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
+    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
     g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    g.drawRect (getLocalBounds(), 1);
 
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
-    g.drawText ("MixerControlsAreaComponent", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
+    g.drawText (mTrack->getName() + " MixerControlsArea"
+                , getLocalBounds()
+                , juce::Justification::centred
+                , true);
 }
 
 void MixerControlsAreaComponent::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
 
 }

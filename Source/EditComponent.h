@@ -12,7 +12,10 @@
 
 #include <JuceHeader.h>
 #include "EditViewState.h"
-#include "TrackComponent.h"
+//#include "TrackComponent.h"
+#include "InputsAreaComponent.h"
+#include "PluginsAreaComponent.h"
+#include "MixerControlsAreaComponent.h"
 #include "Utilities.h"
 
 namespace te = tracktion_engine;
@@ -38,7 +41,10 @@ namespace styler_app
         te::Edit& mEdit;
         EditViewState mEditViewState;
 
-        juce::OwnedArray<TrackComponent> mTracks;
+        juce::OwnedArray<TrackComponent> mAlwaysPresentTracks;
+        juce::OwnedArray<InputsAreaComponent> mTrackInputsAreas;
+        juce::OwnedArray<PluginsAreaComponent> mTrackPluginsAreas;
+        juce::OwnedArray<MixerControlsAreaComponent> mTrackMixerControlsAreas;
 
         bool mUpdateTracks;
 
@@ -55,7 +61,7 @@ namespace styler_app
         void changeListenerCallback (juce::ChangeBroadcaster*) override;
 
         void buildTracks();
-
+        
         void setupNewTrackButton();
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EditComponent)

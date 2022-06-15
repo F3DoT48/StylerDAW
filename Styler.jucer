@@ -58,10 +58,6 @@
               file="Source/ArrangementPartComponent.cpp"/>
         <FILE id="ayK5Up" name="ArrangementPartComponent.h" compile="0" resource="0"
               file="Source/ArrangementPartComponent.h"/>
-        <FILE id="qISI6t" name="MixerParametersAreaComponent.cpp" compile="1"
-              resource="0" file="Source/MixerParametersAreaComponent.cpp"/>
-        <FILE id="mZJZAs" name="MixerParametersAreaComponent.h" compile="0"
-              resource="0" file="Source/MixerParametersAreaComponent.h"/>
         <FILE id="Yfn07c" name="TrackComponent.cpp" compile="1" resource="0"
               file="Source/TrackComponent.cpp"/>
         <FILE id="pPZVSv" name="TrackComponent.h" compile="0" resource="0"

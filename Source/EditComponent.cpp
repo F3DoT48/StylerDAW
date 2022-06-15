@@ -15,6 +15,7 @@
 #include "TrackComponentMarker.h"
 #include "TrackComponentMaster.h"
 #include "TrackComponentTempo.h"
+#include "InputsAreaComponent.h"
 
 using namespace styler_app;
 
@@ -42,36 +43,68 @@ EditComponent::~EditComponent()
 
 void EditComponent::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
-
-       You should replace everything in this method with your own
-       drawing code..
-    */
-
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
-    g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
     g.drawText ("EditComponent", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
+                juce::Justification::centred, true);
 }
 
 void EditComponent::resized()
 {
     int verticalOffset {0};
-    for (auto track : mTracks)
+
+    for (auto track : mAlwaysPresentTracks)
     {
         track->setBounds (0, verticalOffset, getWidth(), TrackComponentAttributes::minimumHeightInPixels);
         verticalOffset += TrackComponentAttributes::minimumHeightInPixels + TrackComponentAttributes::trackGapInPixels;
     }
 
-    for (auto track : mTracks)
+    jassert (mTrackInputsAreas.size () != mTrackMixerControlsAreas.size ()
+          && mTrackInputsAreas.size () != mTrackPluginsAreas.size ());
+
+    for (int trackId{ 0 }; trackId < mTrackInputsAreas.size(); ++trackId)
+    {
+        mTrackInputsAreas[trackId]->setBounds (0
+                                             , verticalOffset
+                                             , TrackComponentAttributes::inputsAreaWidthInPixels
+                                             , TrackComponentAttributes::minimumHeightInPixels);
+
+        mTrackMixerControlsAreas[trackId]->setBounds (getWidth()
+                                                    - TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels
+                                                    , verticalOffset
+                                                    , TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels
+                                                    , TrackComponentAttributes::minimumHeightInPixels);
+
+        mTrackPluginsAreas[trackId]->setBounds (getWidth()
+                                              - TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels
+                                              - TrackComponentAttributes::pluginAreaWidthInPixels
+                                              , verticalOffset
+                                              , TrackComponentAttributes::pluginAreaWidthInPixels
+                                              , TrackComponentAttributes::minimumHeightInPixels);
+
+        verticalOffset += TrackComponentAttributes::minimumHeightInPixels + TrackComponentAttributes::trackGapInPixels;
+    }
+
+    for (auto track : mAlwaysPresentTracks)
     {
         track->resized();
+    }
+
+    for (auto inputsArea : mTrackInputsAreas)
+    {
+        inputsArea->resized();
+    }
+
+    for (auto pluginsArea : mTrackPluginsAreas)
+    {
+        pluginsArea->resized();
+    }
+
+    for (auto mixerControlsArea : mTrackMixerControlsAreas)
+    {
+        mixerControlsArea->resized();
     }
 
     mNewTrackButton->setBounds (getWidth() - TrackComponentAttributes::newTrackButtonOffsetFromRight
@@ -88,9 +121,19 @@ EditViewState& EditComponent::getEditViewState()
 
 void EditComponent::buildTracks()
 {
-    mTracks.clear();
+    mAlwaysPresentTracks.clear();
     TrackComponent* tmpTrackComponent{ nullptr };
 
+    mTrackInputsAreas.clear();
+    InputsAreaComponent* tmpInputsAreaComponent{ nullptr };
+
+    mTrackPluginsAreas.clear();
+    PluginsAreaComponent* tmpPluginsAreaComponent{ nullptr };
+
+    mTrackMixerControlsAreas.clear();
+    MixerControlsAreaComponent* tmpMixerControlsAreaComponent{ nullptr };
+
+    
     for (auto track : getAllTracks (mEdit))
     {
         if (track->isMasterTrack())
@@ -113,16 +156,45 @@ void EditComponent::buildTracks()
         {
             tmpTrackComponent = new TrackComponentChord (mEditViewState, track);
         }
-        else 
+        else if (track->isAudioTrack())
         {
-            tmpTrackComponent = new TrackComponent (mEditViewState, track);
+            tmpInputsAreaComponent = new InputsAreaComponent (mEditViewState, track);
+            tmpPluginsAreaComponent = new PluginsAreaComponent (mEditViewState, track);
+            tmpMixerControlsAreaComponent = new MixerControlsAreaComponent (mEditViewState, track);
         }
 
         if (tmpTrackComponent != nullptr)
         {
-            mTracks.add (tmpTrackComponent);
+            mAlwaysPresentTracks.add (tmpTrackComponent);
             addAndMakeVisible (tmpTrackComponent);
         }
+
+        tmpTrackComponent = nullptr;
+        
+        if (tmpInputsAreaComponent != nullptr)
+        {
+            mTrackInputsAreas.add (tmpInputsAreaComponent);
+            addAndMakeVisible (tmpInputsAreaComponent);
+        }
+        
+        tmpInputsAreaComponent = nullptr;
+
+        if (tmpPluginsAreaComponent != nullptr)
+        {
+            mTrackPluginsAreas.add (tmpPluginsAreaComponent);
+            addAndMakeVisible (tmpPluginsAreaComponent);
+        }
+
+        tmpPluginsAreaComponent = nullptr;
+
+        if (tmpMixerControlsAreaComponent != nullptr)
+        {
+            mTrackMixerControlsAreas.add (tmpMixerControlsAreaComponent);
+            addAndMakeVisible (tmpMixerControlsAreaComponent);
+        }
+
+        tmpMixerControlsAreaComponent = nullptr;
+
     }
 
     resized();
@@ -164,7 +236,9 @@ void EditComponent::setupNewTrackButton ()
     {
         mEdit.ensureNumberOfAudioTracks (getAudioTracks (mEdit).size() + 1);
         auto rect{ getBounds() };
-        rect.setBottom (rect.getBottom() + TrackComponentAttributes::trackGapInPixels + TrackComponentAttributes::minimumHeightInPixels);
+        rect.setBottom (rect.getBottom() 
+                      + TrackComponentAttributes::trackGapInPixels
+                      + TrackComponentAttributes::minimumHeightInPixels);
         setBounds (rect);        
     };
 }

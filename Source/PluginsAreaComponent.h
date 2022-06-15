@@ -11,19 +11,22 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "TrackComponent.h"
 
-//==============================================================================
-/*
-*/
-class PluginsAreaComponent  : public juce::Component
+namespace te = tracktion_engine;
+
+namespace styler_app
 {
-public:
-    PluginsAreaComponent();
-    ~PluginsAreaComponent() override;
+    class PluginsAreaComponent  : public styler_app::TrackComponent
+    {
+    public:
+        PluginsAreaComponent (EditViewState&, te::Track::Ptr);
+        ~PluginsAreaComponent() override;
 
-    void paint (juce::Graphics&) override;
-    void resized() override;
+        void paint (juce::Graphics&) override;
+        void resized() override;
 
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginsAreaComponent)
-};
+    private:
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginsAreaComponent)
+    };
+}

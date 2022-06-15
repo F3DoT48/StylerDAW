@@ -82,13 +82,17 @@ void StylerMainComponent::resized()
                            * (TrackComponentAttributes::minimumHeightInPixels 
                             + TrackComponentAttributes::trackGapInPixels)
                            + TrackComponentAttributes::newTrackButtonHeight);
+        auto rectForEditComponent = rectangle;
+        
+        rectForEditComponent.setRight (rectForEditComponent.getRight()
+                                     - juce::LookAndFeel::getDefaultLookAndFeel().getDefaultScrollbarWidth());
 
-        mEditComponent->setBounds (rectangle);
+        mEditComponent->setBounds (rectForEditComponent);
         mEditComponentViewport->setBounds (rectangle.removeFromTop (500));
     }
 }
 
-juce::ApplicationCommandTarget* styler_app::StylerMainComponent::getNextCommandTarget ()
+juce::ApplicationCommandTarget* styler_app::StylerMainComponent::getNextCommandTarget()
 {
     return nullptr;
 }

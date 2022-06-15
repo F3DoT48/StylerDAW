@@ -28,7 +28,7 @@ namespace styler_app
 
     private:
 
-        juce::TextButton mDeleteTrackButtom;
+        juce::TextButton mDeleteTrackButton;
     
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (InputsAreaComponent)
     };

@@ -15,10 +15,21 @@ using namespace styler_app;
 
 //==============================================================================
 
-styler_app::InputsAreaComponent::InputsAreaComponent (EditViewState& editViewState, te::Track::Ptr track)
+InputsAreaComponent::InputsAreaComponent (EditViewState& editViewState, te::Track::Ptr track)
     : TrackComponent (editViewState, track)
+    , mDeleteTrackButton ("Delete track")
 {
-
+    mDeleteTrackButton.onClick = [this]()
+    {
+        mEditViewState.mEdit.deleteTrack (getTrack().get());
+        auto rect{ getParentComponent()->getBounds() };
+        rect.setBottom (rect.getBottom() 
+                      - TrackComponentAttributes::trackGapInPixels
+                      - TrackComponentAttributes::minimumHeightInPixels);
+        getParentComponent()->setBounds (rect);      
+    };
+    
+    addAndMakeVisible (mDeleteTrackButton);
 }
 
 InputsAreaComponent::~InputsAreaComponent()
@@ -34,7 +45,7 @@ void InputsAreaComponent::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
-    g.drawText (mTrack->getName()
+    g.drawText (mTrack->getName() + " InputsArea"
               , getLocalBounds()
               , juce::Justification::centred
               , true);
@@ -42,7 +53,7 @@ void InputsAreaComponent::paint (juce::Graphics& g)
 
 void InputsAreaComponent::resized()
 {
+    auto rectangle{ getLocalBounds()};
 
-
-
+    mDeleteTrackButton.setBounds (rectangle.removeFromTop(20));
 }
