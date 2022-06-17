@@ -12,10 +12,18 @@
 
 #include <JuceHeader.h>
 #include "EditViewState.h"
-//#include "TrackComponent.h"
-#include "InputsAreaComponent.h"
-#include "PluginsAreaComponent.h"
-#include "MixerControlsAreaComponent.h"
+#include "InputsAreaMasterTrackComponent.h"
+#include "InputsAreaTempoTrackComponent.h"
+#include "InputsAreaChordTrackComponent.h"
+#include "InputsAreaAudioTrackComponent.h"
+#include "PluginsAreaMasterTrackComponent.h"
+#include "PluginsAreaChordTrackComponent.h"
+#include "PluginsAreaTempoTrackComponent.h"
+#include "PluginsAreaAudioTrackComponent.h"
+#include "MixerControlsAreaMasterTrackComponent.h"
+#include "MixerControlsAreaTempoTrackComponent.h"
+#include "MixerControlsAreaChordTrackComponent.h"
+#include "MixerControlsAreaAudioTrackComponent.h"
 #include "Utilities.h"
 
 namespace te = tracktion_engine;
@@ -41,10 +49,25 @@ namespace styler_app
         te::Edit& mEdit;
         EditViewState mEditViewState;
 
-        juce::OwnedArray<TrackComponent> mAlwaysPresentTracks;
-        juce::OwnedArray<InputsAreaComponent> mTrackInputsAreas;
-        juce::OwnedArray<PluginsAreaComponent> mTrackPluginsAreas;
-        juce::OwnedArray<MixerControlsAreaComponent> mTrackMixerControlsAreas;
+        /*std::unique_ptr<InputsAreaMasterTrackComponent> mInputsAreaMasterTrack;
+        std::unique_ptr<PluginsAreaMasterTrackComponent> mPluginsAreaMasterTrack;
+        std::unique_ptr<MixerControlsAreaMasterTrackComponent> mMixerControlsAreaMasterTrack;
+
+        std::unique_ptr<InputsAreaChordTrackComponent> mInputsAreaChordTrack;
+        std::unique_ptr<PluginsAreaChordTrackComponent> mPluginsAreaChordTrack;
+        std::unique_ptr<MixerControlsAreaChordTrackComponent> mMixerControlsAreaChordTrack;
+
+        std::unique_ptr<InputsAreaTempoTrackComponent> mInputsAreaTempoTrack;
+        std::unique_ptr<PluginsAreaTempoTrackComponent> mPluginsAreaTempoTrack;
+        std::unique_ptr<MixerControlsAreaTempoTrackComponent> mMixerControlsAreaTempoTrack;*/
+
+        juce::OwnedArray<TrackComponent> mInputsAreasPermanentTracks;
+        juce::OwnedArray<TrackComponent> mPluginsAreasPermanentTracks;
+        juce::OwnedArray<TrackComponent> mMixerControlsAreasPermanentTracks;
+
+        juce::OwnedArray<TrackComponent> mInputsAreasAudioTracks;
+        juce::OwnedArray<TrackComponent> mPluginsAreasAudioTracks;
+        juce::OwnedArray<TrackComponent> mMixerControlsAreasAudioTracks;
 
         bool mUpdateTracks;
 

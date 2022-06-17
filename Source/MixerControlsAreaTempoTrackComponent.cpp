@@ -1,30 +1,31 @@
 /*
   ==============================================================================
 
-    PluginsAreaComponent.cpp
-    Created: 4 Jun 2022 10:37:39pm
+    MixerControlsAreaTempoTrackComponent.cpp
+    Created: 16 Jun 2022 3:50:06pm
     Author:  User
 
   ==============================================================================
 */
 
 #include <JuceHeader.h>
-#include "PluginsAreaComponent.h"
+#include "MixerControlsAreaTempoTrackComponent.h"
 
 using namespace styler_app;
 
 //==============================================================================
-PluginsAreaComponent::PluginsAreaComponent(EditViewState& editViewState, te::Track::Ptr track)
+MixerControlsAreaTempoTrackComponent::MixerControlsAreaTempoTrackComponent(EditViewState& editViewState, te::Track::Ptr track)
     : TrackComponent (editViewState, track)
 {
-    
+
 }
 
-PluginsAreaComponent::~PluginsAreaComponent()
+MixerControlsAreaTempoTrackComponent::~MixerControlsAreaTempoTrackComponent()
 {
+
 }
 
-void PluginsAreaComponent::paint (juce::Graphics& g)
+void MixerControlsAreaTempoTrackComponent::paint (juce::Graphics& g)
 {
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
@@ -33,15 +34,13 @@ void PluginsAreaComponent::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
-    g.drawText (mTrack->getName() + " PluginsArea"
+    g.drawText (mTrack->getName() + " MixerControlsArea"
                 , getLocalBounds()
                 , juce::Justification::centred
                 , true);
 }
 
-void PluginsAreaComponent::resized()
+void MixerControlsAreaTempoTrackComponent::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
 
 }

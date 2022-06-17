@@ -6,46 +6,82 @@
   <MAINGROUP id="dKXk2I" name="Styler">
     <GROUP id="{193BEC45-31AE-BA32-125F-DDB153D83742}" name="Source">
       <GROUP id="{58B67417-1632-C97D-B36B-7D4F982C74A6}" name="UIComponents">
-        <FILE id="PG0ubk" name="MixerControlsAreaComponent.cpp" compile="1"
-              resource="0" file="Source/MixerControlsAreaComponent.cpp"/>
-        <FILE id="B87S37" name="MixerControlsAreaComponent.h" compile="0" resource="0"
-              file="Source/MixerControlsAreaComponent.h"/>
-        <FILE id="UcncIF" name="PluginsAreaComponent.cpp" compile="1" resource="0"
-              file="Source/PluginsAreaComponent.cpp"/>
-        <FILE id="JdaFFV" name="PluginsAreaComponent.h" compile="0" resource="0"
-              file="Source/PluginsAreaComponent.h"/>
+        <GROUP id="{F0D1EE26-BCBC-4430-4187-AAD54745D2CB}" name="AudioTrackComponents">
+          <FILE id="PG0ubk" name="MixerControlsAreaAudioTrackComponent.cpp" compile="1"
+                resource="0" file="Source/MixerControlsAreaAudioTrackComponent.cpp"/>
+          <FILE id="B87S37" name="MixerControlsAreaAudioTrackComponent.h" compile="0"
+                resource="0" file="Source/MixerControlsAreaAudioTrackComponent.h"/>
+          <FILE id="UcncIF" name="PluginsAreaAudioTrackComponent.cpp" compile="1"
+                resource="0" file="Source/PluginsAreaAudioTrackComponent.cpp"/>
+          <FILE id="JdaFFV" name="PluginsAreaAudioTrackComponent.h" compile="0"
+                resource="0" file="Source/PluginsAreaAudioTrackComponent.h"/>
+          <FILE id="blYBJC" name="InputsAreaAudioTrackComponent.cpp" compile="1"
+                resource="0" file="Source/InputsAreaAudioTrackComponent.cpp"/>
+          <FILE id="aZwXMr" name="InputsAreaAudioTrackComponent.h" compile="0"
+                resource="0" file="Source/InputsAreaAudioTrackComponent.h"/>
+          <FILE id="Yfn07c" name="TrackComponent.cpp" compile="1" resource="0"
+                file="Source/TrackComponent.cpp"/>
+          <FILE id="pPZVSv" name="TrackComponent.h" compile="0" resource="0"
+                file="Source/TrackComponent.h"/>
+        </GROUP>
+        <GROUP id="{FA28FC48-EE72-7103-3C83-EAAC25945F4B}" name="ChordTrackComponents">
+          <FILE id="hQW1VV" name="PluginsAreaChordTrackComponent.cpp" compile="1"
+                resource="0" file="Source/PluginsAreaChordTrackComponent.cpp"/>
+          <FILE id="ylDB77" name="PluginsAreaChordTrackComponent.h" compile="0"
+                resource="0" file="Source/PluginsAreaChordTrackComponent.h"/>
+          <FILE id="fr6bEP" name="InputsAreaChordTrackComponent.cpp" compile="1"
+                resource="0" file="Source/InputsAreaChordTrackComponent.cpp"/>
+          <FILE id="oWeJ1h" name="InputsAreaChordTrackComponent.h" compile="0"
+                resource="0" file="Source/InputsAreaChordTrackComponent.h"/>
+          <FILE id="HAcm4H" name="MixerControlsAreaChordTrackComponent.cpp" compile="1"
+                resource="0" file="Source/MixerControlsAreaChordTrackComponent.cpp"/>
+          <FILE id="a16EDr" name="MixerControlsAreaChordTrackComponent.h" compile="0"
+                resource="0" file="Source/MixerControlsAreaChordTrackComponent.h"/>
+          <FILE id="JNQf7j" name="TrackComponentChord.cpp" compile="1" resource="0"
+                file="Source/TrackComponentChord.cpp"/>
+          <FILE id="bWzWss" name="TrackComponentChord.h" compile="0" resource="0"
+                file="Source/TrackComponentChord.h"/>
+        </GROUP>
+        <GROUP id="{F43DD703-4459-B936-4FBC-D6C22A463235}" name="TempoTrackComponents">
+          <FILE id="VZB2oV" name="TrackComponentTempo.cpp" compile="1" resource="0"
+                file="Source/TrackComponentTempo.cpp"/>
+          <FILE id="EJBHza" name="TrackComponentTempo.h" compile="0" resource="0"
+                file="Source/TrackComponentTempo.h"/>
+          <FILE id="uFzhZy" name="PluginsAreaTempoTrackComponent.cpp" compile="1"
+                resource="0" file="Source/PluginsAreaTempoTrackComponent.cpp"/>
+          <FILE id="k4vQCO" name="PluginsAreaTempoTrackComponent.h" compile="0"
+                resource="0" file="Source/PluginsAreaTempoTrackComponent.h"/>
+          <FILE id="WzE2fA" name="InputsAreaTempoTrackComponent.cpp" compile="1"
+                resource="0" file="Source/InputsAreaTempoTrackComponent.cpp"/>
+          <FILE id="sNvno3" name="InputsAreaTempoTrackComponent.h" compile="0"
+                resource="0" file="Source/InputsAreaTempoTrackComponent.h"/>
+          <FILE id="JYtT8h" name="MixerControlsAreaTempoTrackComponent.cpp" compile="1"
+                resource="0" file="Source/MixerControlsAreaTempoTrackComponent.cpp"/>
+          <FILE id="S2qtZU" name="MixerControlsAreaTempoTrackComponent.h" compile="0"
+                resource="0" file="Source/MixerControlsAreaTempoTrackComponent.h"/>
+        </GROUP>
+        <GROUP id="{AEC6A5BC-70BD-07FC-A61C-DD65B21436AC}" name="MasterTrackComponents">
+          <FILE id="MhnR2w" name="PluginsAreaMasterTrackComponent.cpp" compile="1"
+                resource="0" file="Source/PluginsAreaMasterTrackComponent.cpp"/>
+          <FILE id="Y4x5zi" name="PluginsAreaMasterTrackComponent.h" compile="0"
+                resource="0" file="Source/PluginsAreaMasterTrackComponent.h"/>
+          <FILE id="CO2OyB" name="InputsAreaMasterTrackComponent.cpp" compile="1"
+                resource="0" file="Source/InputsAreaMasterTrackComponent.cpp"/>
+          <FILE id="yAarhw" name="InputsAreaMasterTrackComponent.h" compile="0"
+                resource="0" file="Source/InputsAreaMasterTrackComponent.h"/>
+          <FILE id="LVnf8V" name="MixerControlsAreaMasterTrackComponent.cpp"
+                compile="1" resource="0" file="Source/MixerControlsAreaMasterTrackComponent.cpp"/>
+          <FILE id="RQZFEC" name="MixerControlsAreaMasterTrackComponent.h" compile="0"
+                resource="0" file="Source/MixerControlsAreaMasterTrackComponent.h"/>
+          <FILE id="OLBnp9" name="TrackComponentMaster.cpp" compile="1" resource="0"
+                file="Source/TrackComponentMaster.cpp"/>
+          <FILE id="FzmaTC" name="TrackComponentMaster.h" compile="0" resource="0"
+                file="Source/TrackComponentMaster.h"/>
+        </GROUP>
         <FILE id="eGhJsJ" name="ArrangerAreaComponent.cpp" compile="1" resource="0"
               file="Source/ArrangerAreaComponent.cpp"/>
         <FILE id="pwpSVL" name="ArrangerAreaComponent.h" compile="0" resource="0"
               file="Source/ArrangerAreaComponent.h"/>
-        <FILE id="blYBJC" name="InputsAreaComponent.cpp" compile="1" resource="0"
-              file="Source/InputsAreaComponent.cpp"/>
-        <FILE id="aZwXMr" name="InputsAreaComponent.h" compile="0" resource="0"
-              file="Source/InputsAreaComponent.h"/>
-        <FILE id="luwwpQ" name="TrackComponentEmpty.cpp" compile="1" resource="0"
-              file="Source/TrackComponentEmpty.cpp"/>
-        <FILE id="hGL1DL" name="TrackComponentEmpty.h" compile="0" resource="0"
-              file="Source/TrackComponentEmpty.h"/>
-        <FILE id="JNQf7j" name="TrackComponentChord.cpp" compile="1" resource="0"
-              file="Source/TrackComponentChord.cpp"/>
-        <FILE id="bWzWss" name="TrackComponentChord.h" compile="0" resource="0"
-              file="Source/TrackComponentChord.h"/>
-        <FILE id="zXa0Zo" name="TrackComponentArranger.cpp" compile="1" resource="0"
-              file="Source/TrackComponentArranger.cpp"/>
-        <FILE id="dKd0vX" name="TrackComponentArranger.h" compile="0" resource="0"
-              file="Source/TrackComponentArranger.h"/>
-        <FILE id="bqke4f" name="TrackComponentMarker.cpp" compile="1" resource="0"
-              file="Source/TrackComponentMarker.cpp"/>
-        <FILE id="xnmM8U" name="TrackComponentMarker.h" compile="0" resource="0"
-              file="Source/TrackComponentMarker.h"/>
-        <FILE id="VZB2oV" name="TrackComponentTempo.cpp" compile="1" resource="0"
-              file="Source/TrackComponentTempo.cpp"/>
-        <FILE id="EJBHza" name="TrackComponentTempo.h" compile="0" resource="0"
-              file="Source/TrackComponentTempo.h"/>
-        <FILE id="OLBnp9" name="TrackComponentMaster.cpp" compile="1" resource="0"
-              file="Source/TrackComponentMaster.cpp"/>
-        <FILE id="FzmaTC" name="TrackComponentMaster.h" compile="0" resource="0"
-              file="Source/TrackComponentMaster.h"/>
         <FILE id="skdk6O" name="CommandIDs.h" compile="0" resource="0" file="Source/CommandIDs.h"/>
         <FILE id="CG0Gw9" name="MainComponentMenuBar.cpp" compile="1" resource="0"
               file="Source/MainComponentMenuBar.cpp"/>
@@ -58,10 +94,6 @@
               file="Source/ArrangementPartComponent.cpp"/>
         <FILE id="ayK5Up" name="ArrangementPartComponent.h" compile="0" resource="0"
               file="Source/ArrangementPartComponent.h"/>
-        <FILE id="Yfn07c" name="TrackComponent.cpp" compile="1" resource="0"
-              file="Source/TrackComponent.cpp"/>
-        <FILE id="pPZVSv" name="TrackComponent.h" compile="0" resource="0"
-              file="Source/TrackComponent.h"/>
         <FILE id="mXoO6s" name="EditComponent.cpp" compile="1" resource="0"
               file="Source/EditComponent.cpp"/>
         <FILE id="fiqyaT" name="EditComponent.h" compile="0" resource="0" file="Source/EditComponent.h"/>

@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    MixerControlsAreaComponent.h
-    Created: 4 Jun 2022 10:37:55pm
+    MixerControlsAreaChordTrackComponent.h
+    Created: 16 Jun 2022 3:49:31pm
     Author:  User
 
   ==============================================================================
@@ -17,16 +17,16 @@ namespace te = tracktion_engine;
 
 namespace styler_app
 {
-    class MixerControlsAreaComponent  : public styler_app::TrackComponent
+    class MixerControlsAreaChordTrackComponent  : public styler_app::TrackComponent
     {
     public:
-        MixerControlsAreaComponent (EditViewState&, te::Track::Ptr);
-        ~MixerControlsAreaComponent() override;
+        MixerControlsAreaChordTrackComponent (EditViewState&, te::Track::Ptr);
+        ~MixerControlsAreaChordTrackComponent() override;
 
         void paint (juce::Graphics&) override;
         void resized() override;
 
     private:
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MixerControlsAreaComponent)
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MixerControlsAreaChordTrackComponent)
     };
 }

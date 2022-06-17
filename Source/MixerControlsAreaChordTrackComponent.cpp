@@ -1,31 +1,31 @@
 /*
   ==============================================================================
 
-    MixerControlsAreaComponent.cpp
-    Created: 4 Jun 2022 10:37:55pm
+    MixerControlsAreaChordTrackComponent.cpp
+    Created: 16 Jun 2022 3:49:31pm
     Author:  User
 
   ==============================================================================
 */
 
 #include <JuceHeader.h>
-#include "MixerControlsAreaComponent.h"
+#include "MixerControlsAreaChordTrackComponent.h"
 
 using namespace styler_app;
 
 //==============================================================================
-MixerControlsAreaComponent::MixerControlsAreaComponent(EditViewState& editViewState, te::Track::Ptr track)
+MixerControlsAreaChordTrackComponent::MixerControlsAreaChordTrackComponent(EditViewState& editViewState, te::Track::Ptr track)
     : TrackComponent (editViewState, track)
 {
 
 }
 
-MixerControlsAreaComponent::~MixerControlsAreaComponent()
+MixerControlsAreaChordTrackComponent::~MixerControlsAreaChordTrackComponent()
 {
 
 }
 
-void MixerControlsAreaComponent::paint (juce::Graphics& g)
+void MixerControlsAreaChordTrackComponent::paint (juce::Graphics& g)
 {
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
@@ -40,7 +40,7 @@ void MixerControlsAreaComponent::paint (juce::Graphics& g)
                 , true);
 }
 
-void MixerControlsAreaComponent::resized()
+void MixerControlsAreaChordTrackComponent::resized()
 {
 
 }

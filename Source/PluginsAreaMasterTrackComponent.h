@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    InputsAreaComponent.h
-    Created: 4 Jun 2022 10:36:47pm
+    PluginsAreaMasterTrackComponent.h
+    Created: 16 Jun 2022 3:53:10pm
     Author:  User
 
   ==============================================================================
@@ -17,19 +17,16 @@ namespace te = tracktion_engine;
 
 namespace styler_app
 {
-    class InputsAreaComponent  : public styler_app::TrackComponent
+    class PluginsAreaMasterTrackComponent  : public styler_app::TrackComponent
     {
     public:
-        InputsAreaComponent (EditViewState&, te::Track::Ptr);
-        ~InputsAreaComponent() override;
+        PluginsAreaMasterTrackComponent (EditViewState&, te::Track::Ptr);
+        ~PluginsAreaMasterTrackComponent() override;
 
         void paint (juce::Graphics&) override;
         void resized() override;
 
     private:
-
-        juce::TextButton mDeleteTrackButton;
-    
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (InputsAreaComponent)
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginsAreaMasterTrackComponent)
     };
 }

@@ -9,13 +9,13 @@
 */
 
 #include <JuceHeader.h>
-#include "InputsAreaComponent.h"
+#include "InputsAreaAudioTrackComponent.h"
 
 using namespace styler_app;
 
 //==============================================================================
 
-InputsAreaComponent::InputsAreaComponent (EditViewState& editViewState, te::Track::Ptr track)
+InputsAreaAudioTrackComponent::InputsAreaAudioTrackComponent (EditViewState& editViewState, te::Track::Ptr track)
     : TrackComponent (editViewState, track)
     , mDeleteTrackButton ("Delete track")
 {
@@ -32,11 +32,11 @@ InputsAreaComponent::InputsAreaComponent (EditViewState& editViewState, te::Trac
     addAndMakeVisible (mDeleteTrackButton);
 }
 
-InputsAreaComponent::~InputsAreaComponent()
+InputsAreaAudioTrackComponent::~InputsAreaAudioTrackComponent()
 {
 }
 
-void InputsAreaComponent::paint (juce::Graphics& g)
+void InputsAreaAudioTrackComponent::paint (juce::Graphics& g)
 {
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
@@ -51,7 +51,7 @@ void InputsAreaComponent::paint (juce::Graphics& g)
               , true);
 }
 
-void InputsAreaComponent::resized()
+void InputsAreaAudioTrackComponent::resized()
 {
     auto rectangle{ getLocalBounds()};
 

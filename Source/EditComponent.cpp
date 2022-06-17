@@ -10,12 +10,6 @@
 
 #include <JuceHeader.h>
 #include "EditComponent.h"
-#include "TrackComponentArranger.h"
-#include "TrackComponentChord.h"
-#include "TrackComponentMarker.h"
-#include "TrackComponentMaster.h"
-#include "TrackComponentTempo.h"
-#include "InputsAreaComponent.h"
 
 using namespace styler_app;
 
@@ -53,65 +47,83 @@ void EditComponent::paint (juce::Graphics& g)
 
 void EditComponent::resized()
 {
-    int verticalOffset {0};
+    auto rec{ getLocalBounds() };
+    
+    auto recInputAreas{ rec.removeFromLeft (TrackComponentAttributes::inputsAreaWidthInPixels) };
+    auto recMixerControlsAreas{ rec.removeFromRight (TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels) };
+    auto recPluginsAreas{ rec.removeFromRight (TrackComponentAttributes::pluginAreaWidthInPixels) };
 
-    for (auto track : mAlwaysPresentTracks)
+    jassert (mInputsAreasPermanentTracks.size() == mPluginsAreasPermanentTracks.size()
+          && mInputsAreasPermanentTracks.size() == mMixerControlsAreasPermanentTracks.size());
+
+    for (int trackId{ 0 }; trackId < mInputsAreasPermanentTracks.size(); ++trackId)
     {
-        track->setBounds (0, verticalOffset, getWidth(), TrackComponentAttributes::minimumHeightInPixels);
-        verticalOffset += TrackComponentAttributes::minimumHeightInPixels + TrackComponentAttributes::trackGapInPixels;
+        mInputsAreasPermanentTracks[trackId]->setBounds (recInputAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
+                                                                                    + TrackComponentAttributes::trackGapInPixels));
+
+        mMixerControlsAreasPermanentTracks[trackId]->setBounds (recMixerControlsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
+                                                                                                   + TrackComponentAttributes::trackGapInPixels));
+
+        mPluginsAreasPermanentTracks[trackId]->setBounds (recPluginsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
+                                                                                       + TrackComponentAttributes::trackGapInPixels));
     }
 
-    jassert (mTrackInputsAreas.size () != mTrackMixerControlsAreas.size ()
-          && mTrackInputsAreas.size () != mTrackPluginsAreas.size ());
+    assert (mInputsAreasAudioTracks.size() == mPluginsAreasAudioTracks.size()
+         && mInputsAreasAudioTracks.size() == mMixerControlsAreasAudioTracks.size());
 
-    for (int trackId{ 0 }; trackId < mTrackInputsAreas.size(); ++trackId)
+    for (int trackId{ 0 }; trackId < mInputsAreasAudioTracks.size(); ++trackId)
     {
-        mTrackInputsAreas[trackId]->setBounds (0
-                                             , verticalOffset
-                                             , TrackComponentAttributes::inputsAreaWidthInPixels
-                                             , TrackComponentAttributes::minimumHeightInPixels);
+        mInputsAreasAudioTracks[trackId]->setBounds (recInputAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
+                                                                                + TrackComponentAttributes::trackGapInPixels));
 
-        mTrackMixerControlsAreas[trackId]->setBounds (getWidth()
-                                                    - TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels
-                                                    , verticalOffset
-                                                    , TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels
-                                                    , TrackComponentAttributes::minimumHeightInPixels);
+        mMixerControlsAreasAudioTracks[trackId]->setBounds (recMixerControlsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
+                                                                                               + TrackComponentAttributes::trackGapInPixels));
 
-        mTrackPluginsAreas[trackId]->setBounds (getWidth()
-                                              - TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels
-                                              - TrackComponentAttributes::pluginAreaWidthInPixels
-                                              , verticalOffset
-                                              , TrackComponentAttributes::pluginAreaWidthInPixels
-                                              , TrackComponentAttributes::minimumHeightInPixels);
-
-        verticalOffset += TrackComponentAttributes::minimumHeightInPixels + TrackComponentAttributes::trackGapInPixels;
+        mPluginsAreasAudioTracks[trackId]->setBounds (recPluginsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
+                                                                                   + TrackComponentAttributes::trackGapInPixels));
     }
 
-    for (auto track : mAlwaysPresentTracks)
-    {
-        track->resized();
-    }
-
-    for (auto inputsArea : mTrackInputsAreas)
+    for (auto inputsArea : mInputsAreasPermanentTracks)
     {
         inputsArea->resized();
     }
 
-    for (auto pluginsArea : mTrackPluginsAreas)
+    for (auto pluginsArea : mPluginsAreasPermanentTracks)
     {
         pluginsArea->resized();
     }
 
-    for (auto mixerControlsArea : mTrackMixerControlsAreas)
+    for (auto mixerControlsArea : mMixerControlsAreasPermanentTracks)
     {
         mixerControlsArea->resized();
     }
 
+    for (auto inputsArea : mInputsAreasAudioTracks)
+    {
+        inputsArea->resized();
+    }
+
+    for (auto pluginsArea : mPluginsAreasAudioTracks)
+    {
+        pluginsArea->resized();
+    }
+
+    for (auto mixerControlsArea : mMixerControlsAreasAudioTracks)
+    {
+        mixerControlsArea->resized();
+    }
+
+    const int buttonOffsetVertical{ (TrackComponentAttributes::minimumHeightInPixels
+                                   + TrackComponentAttributes::trackGapInPixels)
+                                  * (mPluginsAreasAudioTracks.size()
+                                   + mPluginsAreasPermanentTracks.size())};
+
     mNewTrackButton->setBounds (getWidth() - TrackComponentAttributes::newTrackButtonOffsetFromRight
-                              , verticalOffset
+                              , buttonOffsetVertical
                               , mNewTrackButton->getLookAndFeel().getTextButtonWidthToFitText (*mNewTrackButton
                                                                                              , TrackComponentAttributes::newTrackButtonHeight)
                               , TrackComponentAttributes::newTrackButtonHeight);
+    mNewTrackButton->resized();
 }
 
 EditViewState& EditComponent::getEditViewState()
@@ -121,80 +133,90 @@ EditViewState& EditComponent::getEditViewState()
 
 void EditComponent::buildTracks()
 {
-    mAlwaysPresentTracks.clear();
-    TrackComponent* tmpTrackComponent{ nullptr };
+    mInputsAreasPermanentTracks.clear();
+    mPluginsAreasPermanentTracks.clear();
+    mMixerControlsAreasPermanentTracks.clear();
 
-    mTrackInputsAreas.clear();
-    InputsAreaComponent* tmpInputsAreaComponent{ nullptr };
+    mInputsAreasAudioTracks.clear();
+    mPluginsAreasAudioTracks.clear();
+    mMixerControlsAreasAudioTracks.clear();
 
-    mTrackPluginsAreas.clear();
-    PluginsAreaComponent* tmpPluginsAreaComponent{ nullptr };
-
-    mTrackMixerControlsAreas.clear();
-    MixerControlsAreaComponent* tmpMixerControlsAreaComponent{ nullptr };
+    InputsAreaAudioTrackComponent* tmpInputsAreaAudioTrack{ nullptr };
+    PluginsAreaAudioTrackComponent* tmpPluginsAreaAudioTrack{ nullptr };
+    MixerControlsAreaAudioTrackComponent* tmpMixerControlsAreaAudioTrack{ nullptr };
 
     
     for (auto track : getAllTracks (mEdit))
     {
         if (track->isMasterTrack())
         {
-            tmpTrackComponent = new TrackComponentMaster (mEditViewState, track);
+            InputsAreaMasterTrackComponent* tmpInputsAreaMasterTrack{ new  InputsAreaMasterTrackComponent (mEditViewState, track) };
+            mInputsAreasPermanentTracks.add (tmpInputsAreaMasterTrack);
+            addAndMakeVisible (tmpInputsAreaMasterTrack);
+
+            PluginsAreaMasterTrackComponent* tmpPluginsAreaMasterTrack{ new  PluginsAreaMasterTrackComponent (mEditViewState, track) };
+            mPluginsAreasPermanentTracks.add (tmpPluginsAreaMasterTrack);
+            addAndMakeVisible (tmpPluginsAreaMasterTrack);
+
+            MixerControlsAreaMasterTrackComponent* tmpMixerControlsAreaMasterTrack{ new  MixerControlsAreaMasterTrackComponent (mEditViewState, track) };
+            mMixerControlsAreasPermanentTracks.add (tmpMixerControlsAreaMasterTrack);
+            addAndMakeVisible (tmpMixerControlsAreaMasterTrack);
         }
-        /*else if (track->isArrangerTrack())
-        {
-            tmpTrackComponent = new TrackComponentArranger (mEditViewState, track);
-        }*/
         else if (track->isTempoTrack())
         {
-            tmpTrackComponent = new TrackComponentTempo (mEditViewState, track);
+            InputsAreaTempoTrackComponent* tmpInputsAreaTempoTrack{ new  InputsAreaTempoTrackComponent (mEditViewState, track) };
+            mInputsAreasPermanentTracks.add (tmpInputsAreaTempoTrack);
+            addAndMakeVisible (tmpInputsAreaTempoTrack);
+
+            PluginsAreaTempoTrackComponent* tmpPluginsAreaTempoTrack{ new  PluginsAreaTempoTrackComponent (mEditViewState, track) };
+            mPluginsAreasPermanentTracks.add (tmpPluginsAreaTempoTrack);
+            addAndMakeVisible (tmpPluginsAreaTempoTrack);
+
+            MixerControlsAreaTempoTrackComponent* tmpMixerControlsAreaTempoTrack{ new  MixerControlsAreaTempoTrackComponent (mEditViewState, track) };
+            mMixerControlsAreasPermanentTracks.add (tmpMixerControlsAreaTempoTrack);
+            addAndMakeVisible (tmpMixerControlsAreaTempoTrack);
         }
-        /*else if (track->isMarkerTrack())
-        {
-            tmpTrackComponent = new TrackComponentMarker (mEditViewState, track);
-        }*/
         else if (track->isChordTrack())
         {
-            tmpTrackComponent = new TrackComponentChord (mEditViewState, track);
+            InputsAreaChordTrackComponent* tmpInputsAreaChordTrack{ new  InputsAreaChordTrackComponent (mEditViewState, track) };
+            mInputsAreasPermanentTracks.add (tmpInputsAreaChordTrack);
+            addAndMakeVisible (tmpInputsAreaChordTrack);
+
+            PluginsAreaChordTrackComponent* tmpPluginsAreaChordTrack{ new  PluginsAreaChordTrackComponent (mEditViewState, track) };
+            mPluginsAreasPermanentTracks.add (tmpPluginsAreaChordTrack);
+            addAndMakeVisible (tmpPluginsAreaChordTrack);
+
+            MixerControlsAreaChordTrackComponent* tmpMixerControlsAreaChordTrack{ new  MixerControlsAreaChordTrackComponent (mEditViewState, track) };
+            mMixerControlsAreasPermanentTracks.add (tmpMixerControlsAreaChordTrack);
+            addAndMakeVisible (tmpMixerControlsAreaChordTrack);
         }
-        else if (track->isAudioTrack())
+        else if (track->isAudioTrack ())
         {
-            tmpInputsAreaComponent = new InputsAreaComponent (mEditViewState, track);
-            tmpPluginsAreaComponent = new PluginsAreaComponent (mEditViewState, track);
-            tmpMixerControlsAreaComponent = new MixerControlsAreaComponent (mEditViewState, track);
+            tmpInputsAreaAudioTrack = new InputsAreaAudioTrackComponent (mEditViewState, track);
+            if (tmpInputsAreaAudioTrack != nullptr)
+            {
+                mInputsAreasAudioTracks.add (tmpInputsAreaAudioTrack);
+                addAndMakeVisible (tmpInputsAreaAudioTrack);
+            }
+
+            tmpPluginsAreaAudioTrack = new PluginsAreaAudioTrackComponent (mEditViewState, track);
+            if (tmpPluginsAreaAudioTrack != nullptr)
+            {
+                mPluginsAreasAudioTracks.add (tmpPluginsAreaAudioTrack);
+                addAndMakeVisible (tmpPluginsAreaAudioTrack);
+            }
+            
+            tmpMixerControlsAreaAudioTrack = new MixerControlsAreaAudioTrackComponent (mEditViewState, track);
+            if (tmpMixerControlsAreaAudioTrack != nullptr)
+            {
+                mMixerControlsAreasAudioTracks.add (tmpMixerControlsAreaAudioTrack);
+                addAndMakeVisible (tmpMixerControlsAreaAudioTrack);
+            }
         }
 
-        if (tmpTrackComponent != nullptr)
-        {
-            mAlwaysPresentTracks.add (tmpTrackComponent);
-            addAndMakeVisible (tmpTrackComponent);
-        }
-
-        tmpTrackComponent = nullptr;
-        
-        if (tmpInputsAreaComponent != nullptr)
-        {
-            mTrackInputsAreas.add (tmpInputsAreaComponent);
-            addAndMakeVisible (tmpInputsAreaComponent);
-        }
-        
-        tmpInputsAreaComponent = nullptr;
-
-        if (tmpPluginsAreaComponent != nullptr)
-        {
-            mTrackPluginsAreas.add (tmpPluginsAreaComponent);
-            addAndMakeVisible (tmpPluginsAreaComponent);
-        }
-
-        tmpPluginsAreaComponent = nullptr;
-
-        if (tmpMixerControlsAreaComponent != nullptr)
-        {
-            mTrackMixerControlsAreas.add (tmpMixerControlsAreaComponent);
-            addAndMakeVisible (tmpMixerControlsAreaComponent);
-        }
-
-        tmpMixerControlsAreaComponent = nullptr;
-
+        tmpInputsAreaAudioTrack = nullptr;
+        tmpPluginsAreaAudioTrack = nullptr;
+        tmpMixerControlsAreaAudioTrack = nullptr;
     }
 
     resized();
@@ -217,7 +239,7 @@ void EditComponent::valueTreeChildRemoved (juce::ValueTree&, juce::ValueTree& ch
     }
 }
 
-void EditComponent::handleAsyncUpdate ()
+void EditComponent::handleAsyncUpdate()
 {
     if (compareAndReset (mUpdateTracks))
     {
@@ -230,7 +252,7 @@ void EditComponent::changeListenerCallback (juce::ChangeBroadcaster*)
     repaint(); 
 }
 
-void EditComponent::setupNewTrackButton ()
+void EditComponent::setupNewTrackButton()
 {
     mNewTrackButton->onClick = [this]
     {
