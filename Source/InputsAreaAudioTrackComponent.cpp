@@ -17,23 +17,134 @@ using namespace styler_app;
 
 InputsAreaAudioTrackComponent::InputsAreaAudioTrackComponent (EditViewState& editViewState, te::Track::Ptr track)
     : TrackComponent (editViewState, track)
+    , mAudioTrack{ dynamic_cast<te::AudioTrack*> (track.get())}
     , mDeleteTrackButton ("Delete track")
+    , mMidiInputSelectorButton ("Midi in")
+    , mAudioInputSelectorButton ("Audio in")
 {
     mDeleteTrackButton.onClick = [this]()
     {
         mEditViewState.mEdit.deleteTrack (getTrack().get());
-        auto rect{ getParentComponent()->getBounds() };
-        rect.setBottom (rect.getBottom() 
-                      - TrackComponentAttributes::trackGapInPixels
-                      - TrackComponentAttributes::minimumHeightInPixels);
-        getParentComponent()->setBounds (rect);      
     };
-    
+
+    mMidiInputSelectorButton.onClick = [this]()
+    {
+        juce::PopupMenu midiInputMenu;
+
+        int itemId{ 1 };
+
+        for (auto inputDeviceInstance : mAudioTrack->edit.getAllInputDevices())
+        {
+            if (inputDeviceInstance->getInputDevice().getDeviceType() == te::InputDevice::physicalMidiDevice)
+            {
+                bool isTicked {inputDeviceInstance->isOnTargetTrack (*mAudioTrack)};
+                midiInputMenu.addItem (itemId++
+                                        , inputDeviceInstance->getInputDevice().getName()
+                                        , true
+                                        , isTicked);
+            }
+        }
+
+        if (itemId == 1)
+        {
+            midiInputMenu.addItem (-1
+                                 , "No input devices found"
+                                 , false
+                                 , false);
+        }            
+
+        int clickedItemId{ midiInputMenu.show() };
+
+        if (clickedItemId > 0)
+        {
+            itemId = 1;
+            for (auto inputDeviceInstance : mAudioTrack->edit.getAllInputDevices())
+            {
+                if (inputDeviceInstance->getInputDevice().getDeviceType() == te::InputDevice::physicalMidiDevice)
+                {
+                    if (itemId == clickedItemId)
+                    {
+                        if (inputDeviceInstance->isOnTargetTrack (*mAudioTrack))
+                        {
+                            inputDeviceInstance->removeTargetTrack (*mAudioTrack);
+                        }
+                        else
+                        {
+                            inputDeviceInstance->setTargetTrack (*mAudioTrack, 0, false);
+                        }
+                    }
+                    itemId++;
+                }
+            }
+        }
+    };
+
+    mAudioInputSelectorButton.onClick = [this]()
+    {
+        juce::PopupMenu audioInputMenu;
+
+        int itemId{ 1 };
+
+        for (auto inputDeviceInstance : mAudioTrack->edit.getAllInputDevices())
+        {
+            if (inputDeviceInstance->getInputDevice().getDeviceType() == te::InputDevice::waveDevice)
+            {
+                bool isTicked {inputDeviceInstance->isOnTargetTrack (*mAudioTrack)};
+                audioInputMenu.addItem (itemId++
+                                      , inputDeviceInstance->getInputDevice().getName()
+                                      , true
+                                      , isTicked);
+            }
+        }
+
+        if (itemId == 1)
+        {
+            audioInputMenu.addItem (-1
+                                  , "No input devices found"
+                                  , false
+                                  , false);
+        }            
+
+        int clickedItemId{ audioInputMenu.show() };
+
+        if (clickedItemId > 0)
+        {
+            itemId = 1;
+            for (auto inputDeviceInstance : mAudioTrack->edit.getAllInputDevices())
+            {
+                if (inputDeviceInstance->getInputDevice().getDeviceType() == te::InputDevice::waveDevice)
+                {
+                    if (itemId == clickedItemId)
+                    {
+                        if (inputDeviceInstance->isOnTargetTrack (*mAudioTrack))
+                        {
+                            inputDeviceInstance->removeTargetTrack (*mAudioTrack);
+                        }
+                        else
+                        {
+                            inputDeviceInstance->setTargetTrack (*mAudioTrack, 0, false);
+                        }
+                    }
+                    itemId++;
+                }
+            }
+        }
+    };
+
     addAndMakeVisible (mDeleteTrackButton);
+    addAndMakeVisible (mMidiInputSelectorButton);
+    addAndMakeVisible (mAudioInputSelectorButton);
+
+    mTrack->state.addListener (this);
+    mInputsState = mTrack->edit.state.getChildWithName (te::IDs::INPUTDEVICES);
+    mInputsState.addListener (this);
+
+    valueTreePropertyChanged (mInputsState, te::IDs::targetIndex);
 }
 
 InputsAreaAudioTrackComponent::~InputsAreaAudioTrackComponent()
 {
+    mTrack->state.removeListener (this);
 }
 
 void InputsAreaAudioTrackComponent::paint (juce::Graphics& g)
@@ -56,4 +167,17 @@ void InputsAreaAudioTrackComponent::resized()
     auto rectangle{ getLocalBounds()};
 
     mDeleteTrackButton.setBounds (rectangle.removeFromTop(20));
+    mMidiInputSelectorButton.setBounds (rectangle.removeFromTop (20));
+    mAudioInputSelectorButton.setBounds (rectangle.removeFromTop (20));
+}
+
+void InputsAreaAudioTrackComponent::valueTreeChanged()
+{
+
+}
+
+void InputsAreaAudioTrackComponent::valueTreePropertyChanged (juce::ValueTree& valueTree
+                                                            , const juce::Identifier& identifier)
+{
+    // implement updates of solo/mute/arm buttons
 }

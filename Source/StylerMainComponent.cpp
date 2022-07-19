@@ -1,6 +1,7 @@
 #include "StylerMainComponent.h"
 #include "StylerTracktionEngineBehaviour.h"
 #include "StylerUIBehaviour.h"
+#include "SettingsComponent.h"
 
 
 using namespace styler_app;
@@ -34,9 +35,6 @@ StylerMainComponent::StylerMainComponent()
 
     addKeyListener (mCommandManager.getKeyMappings());
     setWantsKeyboardFocus (true);
-
-    mEdit->deleteTrack (mEdit->getArrangerTrack());
-    mEdit->deleteTrack (mEdit->getMarkerTrack());
 
     mEdit->getUndoManager().clearUndoHistory();
 
@@ -76,7 +74,6 @@ void StylerMainComponent::resized()
 
     if (mEditComponent != nullptr)
     {
-        //rectangle.setBottom (2000);
         rectangle.setBottom (rectangle.getY()
                            + mEdit->getTrackList().size()
                            * (TrackComponentAttributes::minimumHeightInPixels 
@@ -193,7 +190,20 @@ bool styler_app::StylerMainComponent::perform (const InvocationInfo& invocationI
         // to be implemented
         break;
     case CommandIDs::optionsSettings:
-        // to be implemented
+    {
+        juce::DialogWindow::LaunchOptions settingsWindowLaunchOptions;
+        settingsWindowLaunchOptions.dialogTitle = "Settings";
+        settingsWindowLaunchOptions.dialogBackgroundColour = getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId);
+        settingsWindowLaunchOptions.escapeKeyTriggersCloseButton = false;
+        settingsWindowLaunchOptions.resizable = true;
+        settingsWindowLaunchOptions.useBottomRightCornerResizer = true;
+                
+        auto settingsComponent { new SettingsComponent (mTracktionEngine) };
+
+        settingsComponent->setSize (800, 600);
+        settingsWindowLaunchOptions.content.setOwned (settingsComponent);
+        settingsWindowLaunchOptions.launchAsync();
+    }
         break;
     case CommandIDs::helpHelp:
         // to be implemented
@@ -239,8 +249,6 @@ void StylerMainComponent::createOrLoadEdit (juce::File editFile = {})
     mEditComponent = std::make_unique<EditComponent> (*mEdit, mSelectionManager);
 
     addChildComponent (mEditComponent.get());
-
-    //addAndMakeVisible (*mEditComponent);
 }
 
 void StylerMainComponent::enableAllInputs()

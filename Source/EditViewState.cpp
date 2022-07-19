@@ -13,7 +13,7 @@
 using namespace styler_app;
 
 EditViewState::EditViewState (te::Edit& edit
-                              , te::SelectionManager& selectionManager)
+                            , te::SelectionManager& selectionManager)
     : mEdit{ edit }
     , mSelectionManager{ selectionManager }
 {

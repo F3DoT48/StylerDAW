@@ -25,6 +25,6 @@ namespace styler_app
         te::Edit& mEdit;
         te::SelectionManager& mSelectionManager;
 
-        juce::ValueTree mState;
+        //juce::ValueTree mState;
     };
 }

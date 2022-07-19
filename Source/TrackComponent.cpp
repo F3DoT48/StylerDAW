@@ -18,13 +18,12 @@ TrackComponent::TrackComponent (EditViewState& editViewState, te::Track::Ptr tra
     : mEditViewState{ editViewState }
     , mTrack{ track }
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
 
 }
 
 TrackComponent::~TrackComponent()
 {
+
 }
 
 void TrackComponent::paint (juce::Graphics& g)

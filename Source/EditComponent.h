@@ -31,9 +31,9 @@ namespace te = tracktion_engine;
 namespace styler_app
 {
    class EditComponent : public juce::Component
-                        , private te::ValueTreeAllEventListener
-                        , private styler_app::FlaggedAsyncUpdater
-                        , private juce::ChangeListener
+                       , private te::ValueTreeAllEventListener
+                       , private styler_app::FlaggedAsyncUpdater
+                       , private juce::ChangeListener
     {
     public:
         EditComponent (te::Edit&
@@ -41,25 +41,13 @@ namespace styler_app
         ~EditComponent() override;
 
         void paint (juce::Graphics&) override;
-        void resized () override;
+        void resized() override;
 
         EditViewState& getEditViewState();
 
     private:
         te::Edit& mEdit;
         EditViewState mEditViewState;
-
-        /*std::unique_ptr<InputsAreaMasterTrackComponent> mInputsAreaMasterTrack;
-        std::unique_ptr<PluginsAreaMasterTrackComponent> mPluginsAreaMasterTrack;
-        std::unique_ptr<MixerControlsAreaMasterTrackComponent> mMixerControlsAreaMasterTrack;
-
-        std::unique_ptr<InputsAreaChordTrackComponent> mInputsAreaChordTrack;
-        std::unique_ptr<PluginsAreaChordTrackComponent> mPluginsAreaChordTrack;
-        std::unique_ptr<MixerControlsAreaChordTrackComponent> mMixerControlsAreaChordTrack;
-
-        std::unique_ptr<InputsAreaTempoTrackComponent> mInputsAreaTempoTrack;
-        std::unique_ptr<PluginsAreaTempoTrackComponent> mPluginsAreaTempoTrack;
-        std::unique_ptr<MixerControlsAreaTempoTrackComponent> mMixerControlsAreaTempoTrack;*/
 
         juce::OwnedArray<TrackComponent> mInputsAreasPermanentTracks;
         juce::OwnedArray<TrackComponent> mPluginsAreasPermanentTracks;
@@ -87,6 +75,6 @@ namespace styler_app
         
         void setupNewTrackButton();
 
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(EditComponent)
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EditComponent)
     };
 }

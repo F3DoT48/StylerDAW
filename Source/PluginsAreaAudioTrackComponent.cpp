@@ -10,14 +10,32 @@
 
 #include <JuceHeader.h>
 #include "PluginsAreaAudioTrackComponent.h"
+#include "PluginsRackComponent.h"
 
 using namespace styler_app;
 
 //==============================================================================
-PluginsAreaAudioTrackComponent::PluginsAreaAudioTrackComponent(EditViewState& editViewState, te::Track::Ptr track)
-    : TrackComponent (editViewState, track)
+PluginsAreaAudioTrackComponent::PluginsAreaAudioTrackComponent (EditViewState& editViewState, te::Track::Ptr track)
+    : TrackComponent {editViewState, track}
+    , mPluginsRackButton {"Open Pugins Rack"}
 {
-    
+    mPluginsRackButton.onClick = [this]()
+    {
+        juce::DialogWindow::LaunchOptions pluginsRackWindowLaunchOptions;
+        pluginsRackWindowLaunchOptions.dialogTitle = "Plugins Rack";
+        pluginsRackWindowLaunchOptions.dialogBackgroundColour = getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId);
+        pluginsRackWindowLaunchOptions.escapeKeyTriggersCloseButton = false;
+        pluginsRackWindowLaunchOptions.resizable = true;
+        pluginsRackWindowLaunchOptions.useBottomRightCornerResizer = true;
+
+        auto pluginsRackComponent {new PluginsRackComponent (dynamic_cast<te::RackInstance*> (mTrack->pluginList[0]))};
+
+        pluginsRackComponent->setSize (800, 600);
+        pluginsRackWindowLaunchOptions.content.setOwned (pluginsRackComponent);
+        pluginsRackWindowLaunchOptions.launchAsync();
+    };
+
+    addAndMakeVisible (mPluginsRackButton);
 }
 
 PluginsAreaAudioTrackComponent::~PluginsAreaAudioTrackComponent()
@@ -41,7 +59,7 @@ void PluginsAreaAudioTrackComponent::paint (juce::Graphics& g)
 
 void PluginsAreaAudioTrackComponent::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
+    auto rectangle{ getLocalBounds()};
 
+    mPluginsRackButton.setBounds (rectangle.removeFromTop(20));
 }

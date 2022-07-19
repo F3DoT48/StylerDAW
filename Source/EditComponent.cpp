@@ -17,8 +17,9 @@ using namespace styler_app;
 EditComponent::EditComponent (te::Edit& edit
                             , te::SelectionManager& selectionManager)
     : mEdit{ edit }
-    , mEditViewState{ edit, selectionManager}
+    , mEditViewState{ edit, selectionManager }
     , mNewTrackButton{ std::make_unique<juce::TextButton> ("Add new track") }
+    , mUpdateTracks { false }
 {
     mEdit.state.addListener (this);
     mEditViewState.mSelectionManager.addChangeListener (this);
@@ -190,7 +191,7 @@ void EditComponent::buildTracks()
             mMixerControlsAreasPermanentTracks.add (tmpMixerControlsAreaChordTrack);
             addAndMakeVisible (tmpMixerControlsAreaChordTrack);
         }
-        else if (track->isAudioTrack ())
+        else if (track->isAudioTrack())
         {
             tmpInputsAreaAudioTrack = new InputsAreaAudioTrackComponent (mEditViewState, track);
             if (tmpInputsAreaAudioTrack != nullptr)
@@ -227,6 +228,11 @@ void EditComponent::valueTreeChildAdded (juce::ValueTree&, juce::ValueTree& chil
     if (te::TrackList::isTrack (child))
     {
         markAndUpdate (mUpdateTracks);
+        auto rect{getBounds ()};
+        rect.setBottom (rect.getBottom() 
+                      + TrackComponentAttributes::trackGapInPixels
+                      + TrackComponentAttributes::minimumHeightInPixels);
+        setBounds (rect);
     }
 }
 
@@ -236,6 +242,11 @@ void EditComponent::valueTreeChildRemoved (juce::ValueTree&, juce::ValueTree& ch
     if (te::TrackList::isTrack (child))
     {
         markAndUpdate (mUpdateTracks);
+        auto rect{getBounds()};
+        rect.setBottom (rect.getBottom() 
+                      - TrackComponentAttributes::trackGapInPixels
+                      - TrackComponentAttributes::minimumHeightInPixels);
+        setBounds (rect);
     }
 }
 
@@ -249,18 +260,35 @@ void EditComponent::handleAsyncUpdate()
 
 void EditComponent::changeListenerCallback (juce::ChangeBroadcaster*)
 {
-    repaint(); 
+    repaint();     
 }
 
 void EditComponent::setupNewTrackButton()
 {
     mNewTrackButton->onClick = [this]
     {
-        mEdit.ensureNumberOfAudioTracks (getAudioTracks (mEdit).size() + 1);
-        auto rect{ getBounds() };
-        rect.setBottom (rect.getBottom() 
-                      + TrackComponentAttributes::trackGapInPixels
-                      + TrackComponentAttributes::minimumHeightInPixels);
-        setBounds (rect);        
+        auto audioTracks{ getAudioTracks (mEdit) };
+        const int numGlobalTracks{ 5 };
+        if (audioTracks.size() < mEdit.engine.getEngineBehaviour().getEditLimits().maxNumTracks - numGlobalTracks)
+        {
+            mEdit.ensureNumberOfAudioTracks (audioTracks.size() + 1);
+            auto addedTrack { mEdit.getTrackList()[mEdit.getTrackList().size() - 1]};
+            ///juce::PluginDescription pluginDescription;
+            ///pluginDescription.name = "AudioTrackUserPluginsRack";
+            ///pluginDescription.fileOrIdentifier = juce::String (te::RackType::getRackPresetPrefix()) + "-1";
+            ///pluginDescription.category = te::RackInstance::xmlTypeName;
+            ///pluginDescription.isInstrument = true;
+            //addedTrack->pluginList.insertPlugin (mEdit.getPluginCache().createNewPlugin (te::RackInstance::xmlTypeName, pluginDescription), 0, &mEditViewState.mSelectionManager);
+            //auto xmlPreset { pluginDescription.createXml() };
+            //auto valueTree { juce::ValueTree::fromXml (*xmlPreset)};
+            //auto rackValueTree {valueTree.getChildWithName (te::IDs::RACK)};
+            //auto rackType { mEdit.getRackList().addRackTypeFrom (rackValueTree) };
+            //auto rackInstanceCreationInfo { te::RackInstance::create (*rackType) };
+            //auto rackFx = dynamic_cast<te::RackInstance*> (mEdit.getPluginCache().createNewPlugin (te::RackInstance::xmlTypeName, pluginDescription).get());
+            auto rackTypePtr { mEdit.getRackList().addNewRack() };
+            auto rackInstanceCreationInfo { te::RackInstance::create (*rackTypePtr) };
+            auto rackFx { dynamic_cast<te::RackInstance*> (mEdit.getPluginCache().createNewPlugin (rackInstanceCreationInfo).get()) };
+            addedTrack->pluginList.insertPlugin (*rackFx, 0, &mEditViewState.mSelectionManager);         
+        }
     };
 }
