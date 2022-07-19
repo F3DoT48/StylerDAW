@@ -6,7 +6,7 @@ A loop-based DAW with patterns that respond to real time chord changes.
 
 # To do:
 
-- [ ] Implement basic DAW functionality (adding tracks, selecting inputs...)
+- [x] Implement basic DAW functionality (adding tracks, selecting inputs...)
 - [ ] Implement musicality (based on tracktion engine's musicality code?)
 - [ ] Implement a chord detector
 - [ ] Implement a pattern player plugin
