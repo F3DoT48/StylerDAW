@@ -146,6 +146,7 @@ void EditComponent::buildTracks()
     PluginsAreaAudioTrackComponent* tmpPluginsAreaAudioTrack{ nullptr };
     MixerControlsAreaAudioTrackComponent* tmpMixerControlsAreaAudioTrack{ nullptr };
 
+    int currentAudioTrackId {0};
     
     for (auto track : getAllTracks (mEdit))
     {
@@ -193,26 +194,34 @@ void EditComponent::buildTracks()
         }
         else if (track->isAudioTrack())
         {
-            tmpInputsAreaAudioTrack = new InputsAreaAudioTrackComponent (mEditViewState, track);
-            if (tmpInputsAreaAudioTrack != nullptr)
+            if (currentAudioTrackId == 0)
             {
-                mInputsAreasAudioTracks.add (tmpInputsAreaAudioTrack);
-                addAndMakeVisible (tmpInputsAreaAudioTrack);
+                // create audio track components for chord detection functionality
             }
+            else
+            {
+                tmpInputsAreaAudioTrack = new InputsAreaAudioTrackComponent (mEditViewState, track);
+                if (tmpInputsAreaAudioTrack != nullptr)
+                {
+                    mInputsAreasAudioTracks.add (tmpInputsAreaAudioTrack);
+                    addAndMakeVisible (tmpInputsAreaAudioTrack);
+                }
 
-            tmpPluginsAreaAudioTrack = new PluginsAreaAudioTrackComponent (mEditViewState, track);
-            if (tmpPluginsAreaAudioTrack != nullptr)
-            {
-                mPluginsAreasAudioTracks.add (tmpPluginsAreaAudioTrack);
-                addAndMakeVisible (tmpPluginsAreaAudioTrack);
-            }
+                tmpPluginsAreaAudioTrack = new PluginsAreaAudioTrackComponent (mEditViewState, track);
+                if (tmpPluginsAreaAudioTrack != nullptr)
+                {
+                    mPluginsAreasAudioTracks.add (tmpPluginsAreaAudioTrack);
+                    addAndMakeVisible (tmpPluginsAreaAudioTrack);
+                }
             
-            tmpMixerControlsAreaAudioTrack = new MixerControlsAreaAudioTrackComponent (mEditViewState, track);
-            if (tmpMixerControlsAreaAudioTrack != nullptr)
-            {
-                mMixerControlsAreasAudioTracks.add (tmpMixerControlsAreaAudioTrack);
-                addAndMakeVisible (tmpMixerControlsAreaAudioTrack);
+                tmpMixerControlsAreaAudioTrack = new MixerControlsAreaAudioTrackComponent (mEditViewState, track);
+                if (tmpMixerControlsAreaAudioTrack != nullptr)
+                {
+                    mMixerControlsAreasAudioTracks.add (tmpMixerControlsAreaAudioTrack);
+                    addAndMakeVisible (tmpMixerControlsAreaAudioTrack);
+                }
             }
+            ++currentAudioTrackId;
         }
 
         tmpInputsAreaAudioTrack = nullptr;

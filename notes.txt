@@ -1,0 +1,12 @@
+- JUCE Plugin host app has some code for a graph editor component
+- Replace te::VolumeAndPanPlugin with an extended version that adds stereo field controls.
+  It is not clear if the plugin is added to tracks by default.
+  If yes, replacing requires modifying the library code.
+  Alternatives:
+  - Delete the factory pugin and add a custom one on adding a new track.
+  - Add the stereo processing as a separate plugin.
+- Piano roll:
+  - Juce has grid components.
+  - How to implememnt drawing/selecting/etc tools with the support for keyboard shortcuts?
+  - How to implement automation?
+    - PPQ-based editing or curves by formulas (the latter may be incompatible with MIDI import/export)

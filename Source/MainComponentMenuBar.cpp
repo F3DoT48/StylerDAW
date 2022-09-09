@@ -72,6 +72,7 @@ juce::PopupMenu styler_app::MainComponentMenuBar::getMenuForIndex (int topLevelM
     {
     case 0: // File menu
         popupMenu.addCommandItem (&mCommandManager, CommandIDs::fileNew);
+        popupMenu.addCommandItem (&mCommandManager, CommandIDs::fileOpen);
         popupMenu.addCommandItem (&mCommandManager, CommandIDs::fileSave);
         popupMenu.addCommandItem (&mCommandManager, CommandIDs::fileSaveAs);
         popupMenu.addCommandItem (&mCommandManager, CommandIDs::fileQuit);

@@ -65,7 +65,10 @@ public:
                               DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar (true);
-            setContentOwned (new styler_app::StylerMainComponent(), true);
+
+            styler_app::StylerMainComponent* stylerMainComponent{ new styler_app::StylerMainComponent() };
+            setContentOwned (stylerMainComponent, true);
+            stylerMainComponent->setTopLevelComponentName();
 
            #if JUCE_IOS || JUCE_ANDROID
             setFullScreen (true);

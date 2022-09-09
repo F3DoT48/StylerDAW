@@ -25,9 +25,8 @@ StylerMainComponent::StylerMainComponent()
     }
     else
     {
-        createOrLoadEdit (directory.getNonexistentChildFile ("NewEdit", ".edit", false));
+        createOrLoadEdit (directory.getNonexistentChildFile ("NewEdit", ".tracktionedit", false));
     }
-
     mSelectionManager.addChangeListener (this);
 
     mCommandManager.registerAllCommandsForTarget (this);
@@ -37,10 +36,6 @@ StylerMainComponent::StylerMainComponent()
     setWantsKeyboardFocus (true);
 
     mEdit->getUndoManager().clearUndoHistory();
-
-    mEditComponentViewport->setViewedComponent (mEditComponent.get());
-
-    addAndMakeVisible (mEditComponentViewport.get());
 
     addAndMakeVisible (mMenuBar.get());
 
@@ -166,16 +161,22 @@ bool styler_app::StylerMainComponent::perform (const InvocationInfo& invocationI
     switch (invocationInfo.commandID)
     {
     case CommandIDs::fileNew:
-        // to be implemented
+        createOrLoadEdit ({});
         break;
     case CommandIDs::fileOpen:
-        // to be implemented
+    {   
+        juce::FileChooser fileChooser ("Open Edit", juce::File::getSpecialLocation (juce::File::userDocumentsDirectory), "*.tracktionedit");
+        if (fileChooser.browseForFileToOpen())
+        {
+            createOrLoadEdit (fileChooser.getResult());
+        }        
+    }
         break;
     case CommandIDs::fileSave:
         te::EditFileOperations (*mEdit).save (true, true, false);
         break;
     case CommandIDs::fileSaveAs:
-        // to be implemented
+        te::EditFileOperations (*mEdit).saveAs();
         break;
     case CommandIDs::fileQuit:
         juce::JUCEApplication::getInstance()->systemRequestedQuit();
@@ -215,7 +216,8 @@ bool styler_app::StylerMainComponent::perform (const InvocationInfo& invocationI
         return false;
     }
 
-    repaint();
+    getTopLevelComponent()->repaint();
+    resized();
     return true;
 }
 
@@ -223,7 +225,7 @@ void StylerMainComponent::createOrLoadEdit (juce::File editFile = {})
 {
     if (editFile == juce::File())
     {
-        juce::FileChooser fileChooser ("New Edit", juce::File::getSpecialLocation (juce::File::userDocumentsDirectory), "*.edit");
+        juce::FileChooser fileChooser ("New Edit", juce::File::getSpecialLocation (juce::File::userDocumentsDirectory), "*.tracktionedit");
         if (fileChooser.browseForFileToSave (true))
             editFile = fileChooser.getResult();
         else
@@ -234,9 +236,14 @@ void StylerMainComponent::createOrLoadEdit (juce::File editFile = {})
     mEditComponent = nullptr;
 
     if (editFile.existsAsFile())
+    {
         mEdit = te::loadEditFromFile (mTracktionEngine, editFile);
+    }
     else
+    {
         mEdit = te::createEmptyEdit (mTracktionEngine, editFile);
+        mEdit->ensureNumberOfAudioTracks (1);
+    }
 
     mEdit->playInStopEnabled = true;
     auto& transport = mEdit->getTransport();
@@ -246,9 +253,17 @@ void StylerMainComponent::createOrLoadEdit (juce::File editFile = {})
 
     enableAllInputs();
 
+    removeChildComponent (mEditComponent.get());
+
     mEditComponent = std::make_unique<EditComponent> (*mEdit, mSelectionManager);
 
-    addChildComponent (mEditComponent.get());
+    addChildComponent (mEditComponent.get());    
+    
+    mEditComponentViewport->setViewedComponent (mEditComponent.get());
+
+    addAndMakeVisible (mEditComponentViewport.get());
+
+    setTopLevelComponentName();
 }
 
 void StylerMainComponent::enableAllInputs()
@@ -287,5 +302,10 @@ void StylerMainComponent::enableAllInputs()
 void StylerMainComponent::changeListenerCallback (juce::ChangeBroadcaster* /* source */)
 {
 
+}
+
+void StylerMainComponent::setTopLevelComponentName()
+{
+    getTopLevelComponent()->setName (te::EditFileOperations (*mEdit).getEditFile().getFileName());
 }
 

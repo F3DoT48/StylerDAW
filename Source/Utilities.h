@@ -39,7 +39,7 @@ namespace styler_app
 
     static inline juce::File findRecentEdit (const juce::File& directory)
     {
-        auto files = directory.findChildFiles (juce::File::findFiles, false, "*.edit");
+        auto files = directory.findChildFiles (juce::File::findFiles, false, "*.tracktionedit");
 
         if (files.size() > 0)
         {

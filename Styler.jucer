@@ -136,8 +136,8 @@
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="NewProject"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="NewProject"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Styler"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Styler"/>
         <CONFIGURATION isDebug="0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

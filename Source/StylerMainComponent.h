@@ -29,6 +29,8 @@ namespace styler_app
         void getCommandInfo (juce::CommandID, juce::ApplicationCommandInfo&) override;
         bool perform (const InvocationInfo&) override;
 
+        void setTopLevelComponentName();
+
     private:
         te::Engine mTracktionEngine;
         te::SelectionManager mSelectionManager;
