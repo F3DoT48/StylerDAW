@@ -198,12 +198,19 @@ PluginsRackComponent::PluginsRackComponent (te::RackInstance* rackInstance)
     : mRackInstance { rackInstance }
     , mAddPluginButton { "Add Plugin" }
     , mUpdatePlugins { false }
+    , mUpdateWires { false }
+    , mMidiPinToPlugins { std::make_unique<PinComponent> (te::EditItemID{}, 0, false, juce::String {"MIDI"}) }
+    , mAudioLeftPinToPlugins { std::make_unique<PinComponent> (te::EditItemID{}, 1, false, juce::String { "Left" }) }
+    , mAudioRightPinToPlugins { std::make_unique<PinComponent> (te::EditItemID{}, 2, false, juce::String { "Right" }) }
+    , mAudioLeftPinFromPlugins { std::make_unique<PinComponent> (te::EditItemID{}, 1, true, juce::String { "Left" }) }
+    , mAudioRightPinFromPlugins { std::make_unique<PinComponent> (te::EditItemID{}, 2, true, juce::String { "Right" } )}
+    , mDrawableWire { std::make_unique<WireComponent> (juce::Point<int> { 0, 0 }, juce::Point<int> { 0, 0 }) }
 {
     mAddPluginButton.onClick = [this]()
     {
         if (auto plugin = showMenuAndCreatePlugin (mRackInstance->getOwnerTrack()->edit))
         {
-            mRackInstance->type->addPlugin (plugin, juce::Point<float>(100, 100), true);
+            mRackInstance->type->addPlugin (plugin, juce::Point<float>(0.1f, 0.1f), false);
         }
     };
 
@@ -211,7 +218,16 @@ PluginsRackComponent::PluginsRackComponent (te::RackInstance* rackInstance)
 
     mRackInstance->type->state.addListener (this);
 
+    addAndMakeVisible (mMidiPinToPlugins.get());
+    addAndMakeVisible (mAudioLeftPinToPlugins.get());
+    addAndMakeVisible (mAudioRightPinToPlugins.get());
+    addAndMakeVisible (mAudioLeftPinFromPlugins.get());
+    addAndMakeVisible (mAudioRightPinFromPlugins.get());
+
+    addChildComponent (mDrawableWire.get());
+        
     markAndUpdate (mUpdatePlugins);
+    markAndUpdate (mUpdateWires);
 }
 
 PluginsRackComponent::~PluginsRackComponent()
@@ -226,10 +242,10 @@ void PluginsRackComponent::paint (juce::Graphics& g)
     g.setColour (juce::Colours::grey);
     g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
 
-    g.setColour (juce::Colours::white);
-    g.setFont (14.0f);
-    g.drawText ("PluginsRackComponent", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
+    //g.setColour (juce::Colours::white);
+    //g.setFont (14.0f);
+    //g.drawText ("PluginsRackComponent", getLocalBounds(),
+    //            juce::Justification::centred, true);   // draw some placeholder text
 }
 
 void PluginsRackComponent::resized()
@@ -238,18 +254,68 @@ void PluginsRackComponent::resized()
 
     auto rectForButtons { rect.removeFromTop (30) };
 
-    mAddPluginButton.setBounds (rectForButtons.removeFromLeft (mAddPluginButton.getLookAndFeel().getTextButtonWidthToFitText (mAddPluginButton
+    mAddPluginButton.setBounds (rectForButtons.removeFromRight (mAddPluginButton.getLookAndFeel().getTextButtonWidthToFitText (mAddPluginButton
                                                                                                                             , rectForButtons.getHeight())));
 
-    auto rectForPlugins {rect.removeFromTop (100)};
-    const int pluginComponentWidth { 100 };
-    const int gap { 50 };
+    mMidiPinToPlugins->setBounds (5
+                                , (getHeight() - PinComponent::sHeightInPixels) / 2 - 4 - PinComponent::sHeightInPixels
+                                , PinComponent::sWidthInPixels
+                                , PinComponent::sHeightInPixels);
+
+    mAudioLeftPinToPlugins->setBounds (5
+                                    , (getHeight() - PinComponent::sHeightInPixels) / 2
+                                    , PinComponent::sWidthInPixels
+                                    , PinComponent::sHeightInPixels);
+    mAudioRightPinToPlugins->setBounds (5
+                                     , (getHeight() + PinComponent::sHeightInPixels) / 2 + 4
+                                     , PinComponent::sWidthInPixels
+                                     , PinComponent::sHeightInPixels);
+
+    mAudioLeftPinFromPlugins->setBounds (getWidth() - PinComponent::sWidthInPixels - 5
+                                       , getHeight() / 2 - 2 - PinComponent::sHeightInPixels
+                                       , PinComponent::sWidthInPixels
+                                       , PinComponent::sHeightInPixels);
+    mAudioRightPinFromPlugins->setBounds (getWidth() - PinComponent::sWidthInPixels - 5
+                                        , getHeight() / 2 + 2 + PinComponent::sHeightInPixels
+                                        , PinComponent::sWidthInPixels
+                                        , PinComponent::sHeightInPixels);
 
     for (auto plugin : mPlugins)
     {
-        rectForPlugins.removeFromLeft (gap);
-        plugin->setBounds (rectForPlugins.removeFromLeft (pluginComponentWidth));
+        juce::StringArray ins, outs;
+        plugin->getPlugin()->getChannelNames (&ins, &outs);
+        const int maxNumPins { juce::jmax (ins.size()
+                                         , outs.size()) };
+
+        const int pluginHeight { PluginInRackComponent::sMinHeightInPixels
+                               + (maxNumPins + 1) * PinComponent::sHeightInPixels
+                               + (maxNumPins + 1) * PluginInRackComponent::sGapBtwPins };
+
+        auto position { mRackInstance->type->getPluginPosition(plugin->getPlugin())};
+        plugin->setBounds (static_cast<int> (position.getX() * PluginsRackComponent::sViewportWidth)
+                         , static_cast<int> (position.getY() * PluginsRackComponent::sViewportHeight)
+                         , PluginInRackComponent::sWidthInPixels
+                         , pluginHeight);
     }
+
+    rebuildWiresUsingPlugins();
+
+    for (auto wire : mWires)
+    {
+        wire->setBounds (juce::jmin (wire->getBeginInRack().getX()
+                                   , wire->getEndInRack().getX())
+                       , juce::jmin (wire->getBeginInRack().getY()
+                                   , wire->getEndInRack().getY())
+                       , std::abs (wire->getBeginInRack().getX() - wire->getEndInRack().getX())
+                       , std::abs (wire->getBeginInRack().getY() - wire->getEndInRack().getY()));
+    }
+
+    mDrawableWire->setBounds (juce::jmin (mDrawableWire->getBeginInRack().getX()
+                                        , mDrawableWire->getEndInRack().getX())
+                                        , juce::jmin (mDrawableWire->getBeginInRack().getY()
+                                        , mDrawableWire->getEndInRack().getY())
+                                        , std::abs (mDrawableWire->getBeginInRack().getX() - mDrawableWire->getEndInRack().getX())
+                                        , std::abs (mDrawableWire->getBeginInRack().getY() - mDrawableWire->getEndInRack().getY()));
 }
 
 void PluginsRackComponent::valueTreeChanged()
@@ -260,24 +326,46 @@ void PluginsRackComponent::valueTreeChanged()
 void PluginsRackComponent::valueTreeChildAdded (juce::ValueTree&, juce::ValueTree& child)
 {
     if (child.hasType (te::IDs::PLUGININSTANCE))
+    {
         markAndUpdate (mUpdatePlugins);
+    }
+
+    if (child.hasType (te::IDs::CONNECTION))
+    {
+        markAndUpdate (mUpdateWires);
+    }
 }
 
 void PluginsRackComponent::valueTreeChildRemoved (juce::ValueTree&, juce::ValueTree& child, int)
 {
     if (child.hasType (te::IDs::PLUGININSTANCE))
+    {
         markAndUpdate (mUpdatePlugins);
+    }
+
+    if (child.hasType (te::IDs::CONNECTION))
+    {
+        markAndUpdate (mUpdateWires);
+    }
 }
 
 void PluginsRackComponent::valueTreeChildOrderChanged (juce::ValueTree&, int, int)
 {
     markAndUpdate (mUpdatePlugins);
+    markAndUpdate (mUpdateWires);
 }
 
 void PluginsRackComponent::handleAsyncUpdate()
 {
+    if (compareAndReset (mUpdateWires))
+    {
+        buildWires();
+    }
+
     if (compareAndReset (mUpdatePlugins))
+    {
         buildPlugins();
+    }
 }
 
 void PluginsRackComponent::buildPlugins()
@@ -285,15 +373,88 @@ void PluginsRackComponent::buildPlugins()
     mPlugins.clear();
     
     te::RackType::Ptr rackType { mRackInstance->type };
-    
-   // if (rackType != nullptr)
-   // {
-        for (auto plugin : rackType->getPlugins())
-        {
-            auto p = new PluginInRackComponent (plugin);
-            addAndMakeVisible (p);
-            mPlugins.add (p);
-        }
-   // }
+ 
+    for (const auto plugin : rackType->getPlugins())
+    {
+        auto p = new PluginInRackComponent (plugin);
+        addAndMakeVisible (p);
+        mPlugins.add (p);
+    }
+
+    rebuildWiresUsingPlugins();
+
     resized();
+}
+
+void PluginsRackComponent::buildWires()
+{
+    rebuildWiresUsingPlugins();
+    resized();
+}
+
+void PluginsRackComponent::rebuildWiresUsingPlugins()
+{
+    mWires.clear();
+
+    te::RackType::Ptr rackType { mRackInstance->type };
+
+    for (const auto connection : rackType->getConnections())
+    {
+        juce::Point<int> wireBegin;
+        if (connection->sourceID.get().toString().compare ("0") == 0 && connection->sourcePin == 0)
+        {
+            wireBegin = mMidiPinToPlugins->getWireSnapPositionInRack();
+        }
+        else if (connection->sourceID.get().toString().compare ("0") == 0 && connection->sourcePin == 1)
+        {
+            wireBegin = mAudioLeftPinToPlugins->getWireSnapPositionInRack();
+        }
+        else if (connection->sourceID.get().toString().compare ("0") == 0 && connection->sourcePin == 2)
+        {
+            wireBegin = mAudioRightPinToPlugins->getWireSnapPositionInRack();
+        }
+
+        juce::Point<int> wireEnd;
+        if (connection->destID.get().toString().compare ("0") == 0 && connection->destPin == 0)
+        {
+            continue; // skip the midi from plugins pin
+        }
+        else if (connection->destID.get().toString().compare ("0") == 0 && connection->destPin == 1)
+        {
+            wireEnd = mAudioLeftPinFromPlugins->getWireSnapPositionInRack();
+        }
+        else if (connection->destID.get().toString().compare ("0") == 0 && connection->destPin == 2)
+        {
+            wireEnd = mAudioRightPinFromPlugins->getWireSnapPositionInRack();
+        }
+
+        for (PluginInRackComponent* const plugin : mPlugins)
+        {
+            if (plugin->getPlugin()->itemID == connection->sourceID)
+            {
+                wireBegin = plugin->getOutputPins()[connection->sourcePin]->getWireSnapPositionInRack();
+            }
+            if (plugin->getPlugin()->itemID == connection->destID)
+            {
+                wireEnd = plugin->getInputPins()[connection->destPin]->getWireSnapPositionInRack();
+            }
+        }
+
+        auto wire = new WireComponent (wireBegin
+                                     , wireEnd);
+        addAndMakeVisible (wire, 0);
+
+        mWires.add (wire);
+    }
+}
+
+WireComponent& PluginsRackComponent::getDrawableWire() const
+{
+    return *mDrawableWire;
+}
+
+
+te::RackInstance* PluginsRackComponent::getRackInstance() const
+{
+    return mRackInstance;
 }

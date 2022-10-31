@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 #include "TrackComponent.h"
+#include "PluginsRackWindow.h"
 
 namespace te = tracktion_engine;
 
@@ -28,6 +29,7 @@ namespace styler_app
 
     private:
         juce::TextButton mPluginsRackButton;
+        std::unique_ptr<PluginsRackWindow> mPluginsRackWindow;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginsAreaAudioTrackComponent)
     };

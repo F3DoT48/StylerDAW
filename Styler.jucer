@@ -8,6 +8,13 @@
     <GROUP id="{193BEC45-31AE-BA32-125F-DDB153D83742}" name="Source">
       <GROUP id="{58B67417-1632-C97D-B36B-7D4F982C74A6}" name="UIComponents">
         <GROUP id="{5A113B8D-0FDF-2B33-27A3-F575FBA8189F}" name="RackComponents">
+          <FILE id="CrL0lb" name="ConnectionTarget.cpp" compile="1" resource="0"
+                file="Source/ConnectionTarget.cpp"/>
+          <FILE id="qR31jz" name="ConnectionTarget.h" compile="0" resource="0"
+                file="Source/ConnectionTarget.h"/>
+          <FILE id="VGBShj" name="PinComponent.cpp" compile="1" resource="0"
+                file="Source/PinComponent.cpp"/>
+          <FILE id="rz4S8n" name="PinComponent.h" compile="0" resource="0" file="Source/PinComponent.h"/>
           <FILE id="pFgYEP" name="PluginInRackComponent.cpp" compile="1" resource="0"
                 file="Source/PluginInRackComponent.cpp"/>
           <FILE id="xcnCVH" name="PluginInRackComponent.h" compile="0" resource="0"
@@ -16,6 +23,13 @@
                 file="Source/PluginsRackComponent.cpp"/>
           <FILE id="Kl4W6t" name="PluginsRackComponent.h" compile="0" resource="0"
                 file="Source/PluginsRackComponent.h"/>
+          <FILE id="NGINbc" name="PluginsRackWindow.cpp" compile="1" resource="0"
+                file="Source/PluginsRackWindow.cpp"/>
+          <FILE id="WySbuk" name="PluginsRackWindow.h" compile="0" resource="0"
+                file="Source/PluginsRackWindow.h"/>
+          <FILE id="i1feBo" name="WireComponent.cpp" compile="1" resource="0"
+                file="Source/WireComponent.cpp"/>
+          <FILE id="USSGMM" name="WireComponent.h" compile="0" resource="0" file="Source/WireComponent.h"/>
         </GROUP>
         <FILE id="qdzgIo" name="SettingsComponent.cpp" compile="1" resource="0"
               file="Source/SettingsComponent.cpp"/>

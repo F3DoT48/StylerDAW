@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginsAreaAudioTrackComponent.h"
 #include "PluginsRackComponent.h"
+#include "PinComponent.h"
 
 using namespace styler_app;
 
@@ -18,21 +19,62 @@ using namespace styler_app;
 PluginsAreaAudioTrackComponent::PluginsAreaAudioTrackComponent (EditViewState& editViewState, te::Track::Ptr track)
     : TrackComponent {editViewState, track}
     , mPluginsRackButton {"Open Pugins Rack"}
+    , mPluginsRackWindow {new PluginsRackWindow (juce::String (track->getName()) += " Plugins Rack")}
 {
     mPluginsRackButton.onClick = [this]()
     {
-        juce::DialogWindow::LaunchOptions pluginsRackWindowLaunchOptions;
+        /*juce::DialogWindow::LaunchOptions pluginsRackWindowLaunchOptions;
         pluginsRackWindowLaunchOptions.dialogTitle = "Plugins Rack";
         pluginsRackWindowLaunchOptions.dialogBackgroundColour = getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId);
         pluginsRackWindowLaunchOptions.escapeKeyTriggersCloseButton = false;
-        pluginsRackWindowLaunchOptions.resizable = true;
-        pluginsRackWindowLaunchOptions.useBottomRightCornerResizer = true;
+        pluginsRackWindowLaunchOptions.resizable = false;
+        pluginsRackWindowLaunchOptions.useBottomRightCornerResizer = true;*/
 
-        auto pluginsRackComponent {new PluginsRackComponent (dynamic_cast<te::RackInstance*> (mTrack->pluginList[0]))};
+        auto rack { dynamic_cast<te::RackInstance*> (mTrack->pluginList[0]) };
 
-        pluginsRackComponent->setSize (800, 600);
-        pluginsRackWindowLaunchOptions.content.setOwned (pluginsRackComponent);
-        pluginsRackWindowLaunchOptions.launchAsync();
+        auto pluginsRackComponent { new PluginsRackComponent (rack) };
+        
+        int pluginRackComponentWidth { PluginsRackComponent::sViewportWidth };
+        int pluginRackComponentHeight { PluginsRackComponent::sViewportHeight };
+
+        for (const auto plugin : rack->type->getPlugins())
+        {
+            juce::StringArray ins, outs;
+            plugin->getChannelNames (&ins, &outs);
+            const auto pluginPosition { rack->type->getPluginPosition (plugin) };
+            const int maxNumPins { juce::jmax (ins.size()
+                                             , outs.size()) };
+
+            const int pluginBottom { PluginInRackComponent::sMinHeightInPixels
+                                   + maxNumPins * PinComponent::sHeightInPixels
+                                   + (maxNumPins - 1) * PluginInRackComponent::sGapBtwPins };
+
+            const int newHeight { static_cast<int> (pluginPosition.getY() * pluginRackComponentHeight)
+                                + pluginBottom };
+
+            pluginRackComponentHeight = juce::jmax (pluginRackComponentHeight
+                                                  , newHeight);
+
+            const int newWidth { static_cast<int> (pluginPosition.getX() * pluginRackComponentWidth)
+                               + PluginInRackComponent::sWidthInPixels };
+
+            pluginRackComponentWidth = juce::jmax (pluginRackComponentWidth
+                                                 , newWidth);
+        }
+
+        pluginsRackComponent->setSize (pluginRackComponentWidth, pluginRackComponentHeight);
+
+        auto pluginsRackComponentViewport {new juce::Viewport ("PluginsRackComponentViewport") };
+        pluginsRackComponentViewport->setViewedComponent (pluginsRackComponent);
+        pluginsRackComponentViewport->setBounds (0, 0, PluginsRackComponent::sViewportWidth, PluginsRackComponent::sViewportHeight);
+
+        //pluginsRackWindowLaunchOptions.content.setOwned (pluginsRackComponentViewport);
+        //pluginsRackWindowLaunchOptions.launchAsync();
+        
+        //auto pluginsRackWindow { new PluginsRackWindow (mTrack->getName()) };
+        mPluginsRackWindow->setContentOwned (pluginsRackComponentViewport, true);
+        mPluginsRackWindow->centreWithSize (mPluginsRackWindow->getWidth(), mPluginsRackWindow->getHeight());
+        mPluginsRackWindow->setVisible (true);
     };
 
     addAndMakeVisible (mPluginsRackButton);

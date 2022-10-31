@@ -118,11 +118,13 @@ InputsAreaAudioTrackComponent::InputsAreaAudioTrackComponent (EditViewState& edi
                     {
                         if (inputDeviceInstance->isOnTargetTrack (*mAudioTrack))
                         {
+                            inputDeviceInstance->setRecordingEnabled (*mAudioTrack, false);
                             inputDeviceInstance->removeTargetTrack (*mAudioTrack);
                         }
                         else
                         {
                             inputDeviceInstance->setTargetTrack (*mAudioTrack, 0, false);
+                            inputDeviceInstance->setRecordingEnabled (*mTrack, true);
                         }
                     }
                     itemId++;
@@ -179,5 +181,5 @@ void InputsAreaAudioTrackComponent::valueTreeChanged()
 void InputsAreaAudioTrackComponent::valueTreePropertyChanged (juce::ValueTree& valueTree
                                                             , const juce::Identifier& identifier)
 {
-    // implement updates of solo/mute/arm buttons
+    
 }

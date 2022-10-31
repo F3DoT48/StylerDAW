@@ -282,22 +282,10 @@ void EditComponent::setupNewTrackButton()
         {
             mEdit.ensureNumberOfAudioTracks (audioTracks.size() + 1);
             auto addedTrack { mEdit.getTrackList()[mEdit.getTrackList().size() - 1]};
-            ///juce::PluginDescription pluginDescription;
-            ///pluginDescription.name = "AudioTrackUserPluginsRack";
-            ///pluginDescription.fileOrIdentifier = juce::String (te::RackType::getRackPresetPrefix()) + "-1";
-            ///pluginDescription.category = te::RackInstance::xmlTypeName;
-            ///pluginDescription.isInstrument = true;
-            //addedTrack->pluginList.insertPlugin (mEdit.getPluginCache().createNewPlugin (te::RackInstance::xmlTypeName, pluginDescription), 0, &mEditViewState.mSelectionManager);
-            //auto xmlPreset { pluginDescription.createXml() };
-            //auto valueTree { juce::ValueTree::fromXml (*xmlPreset)};
-            //auto rackValueTree {valueTree.getChildWithName (te::IDs::RACK)};
-            //auto rackType { mEdit.getRackList().addRackTypeFrom (rackValueTree) };
-            //auto rackInstanceCreationInfo { te::RackInstance::create (*rackType) };
-            //auto rackFx = dynamic_cast<te::RackInstance*> (mEdit.getPluginCache().createNewPlugin (te::RackInstance::xmlTypeName, pluginDescription).get());
             auto rackTypePtr { mEdit.getRackList().addNewRack() };
             auto rackInstanceCreationInfo { te::RackInstance::create (*rackTypePtr) };
             auto rackFx { dynamic_cast<te::RackInstance*> (mEdit.getPluginCache().createNewPlugin (rackInstanceCreationInfo).get()) };
-            addedTrack->pluginList.insertPlugin (*rackFx, 0, &mEditViewState.mSelectionManager);         
+            addedTrack->pluginList.insertPlugin (*rackFx, 0, &mEditViewState.mSelectionManager);
         }
     };
 }

@@ -1,4 +1,3 @@
-- JUCE Plugin host app has some code for a graph editor component
 - Replace te::VolumeAndPanPlugin with an extended version that adds stereo field controls.
   It is not clear if the plugin is added to tracks by default.
   If yes, replacing requires modifying the library code.
