@@ -2,11 +2,67 @@
 
 <JUCERPROJECT id="dfsDxf" name="Styler" projectType="guiapp" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              cppLanguageStandard="latest" defines="JUCE_MODAL_LOOPS_PERMITTED=1"
+              cppLanguageStandard="20" defines="JUCE_MODAL_LOOPS_PERMITTED=1"
               headerPath="&quot;E:\Development\SDK\asiosdk_2.3.3_2019-06-14\asiosdk_2.3.3_2019-06-14\common&quot;">
   <MAINGROUP id="dKXk2I" name="Styler">
     <GROUP id="{193BEC45-31AE-BA32-125F-DDB153D83742}" name="Source">
+      <GROUP id="{F50B6CD9-BD88-CD42-DC54-80384AEF6AEB}" name="ArrangerEngine">
+        <FILE id="iw2PO9" name="ArrangementSectionList.cpp" compile="1" resource="0"
+              file="Source/ArrangementSectionList.cpp"/>
+        <FILE id="IeH6dj" name="ArrangementSectionList.h" compile="0" resource="0"
+              file="Source/ArrangementSectionList.h"/>
+        <FILE id="PNvUGZ" name="ArrangementSection.cpp" compile="1" resource="0"
+              file="Source/ArrangementSection.cpp"/>
+        <FILE id="jB6oma" name="ArrangementSection.h" compile="0" resource="0"
+              file="Source/ArrangementSection.h"/>
+        <FILE id="fwVtVk" name="Arrangement.cpp" compile="1" resource="0" file="Source/Arrangement.cpp"/>
+        <FILE id="VbsU8u" name="Arrangement.h" compile="0" resource="0" file="Source/Arrangement.h"/>
+        <FILE id="F6CCML" name="ArrangementPattern.cpp" compile="1" resource="0"
+              file="Source/ArrangementPattern.cpp"/>
+        <FILE id="Ov7WZ4" name="ArrangementPattern.h" compile="0" resource="0"
+              file="Source/ArrangementPattern.h"/>
+        <FILE id="go3NbE" name="ArrangementPatternList.cpp" compile="1" resource="0"
+              file="Source/ArrangementPatternList.cpp"/>
+        <FILE id="S5kNJF" name="ArrangementPatternList.h" compile="0" resource="0"
+              file="Source/ArrangementPatternList.h"/>
+        <FILE id="rx10g0" name="ArrangerEngine.cpp" compile="1" resource="0"
+              file="Source/ArrangerEngine.cpp"/>
+        <FILE id="BT3dfo" name="ArrangerEngine.h" compile="0" resource="0"
+              file="Source/ArrangerEngine.h"/>
+        <FILE id="UmXZWs" name="ArrangerIDs.h" compile="0" resource="0" file="Source/ArrangerIDs.h"/>
+        <FILE id="NriSJ5" name="MidiSequence.cpp" compile="1" resource="0"
+              file="Source/MidiSequence.cpp"/>
+        <FILE id="nYJqck" name="MidiSequence.h" compile="0" resource="0" file="Source/MidiSequence.h"/>
+        <FILE id="ZBPA8f" name="MidiNote.cpp" compile="1" resource="0" file="Source/MidiNote.cpp"/>
+        <FILE id="IMAtOA" name="MidiNote.h" compile="0" resource="0" file="Source/MidiNote.h"/>
+        <FILE id="izdp9O" name="NoteTranspositionRule.cpp" compile="1" resource="0"
+              file="Source/NoteTranspositionRule.cpp"/>
+        <FILE id="pHcO2X" name="NoteTranspositionRule.h" compile="0" resource="0"
+              file="Source/NoteTranspositionRule.h"/>
+      </GROUP>
       <GROUP id="{58B67417-1632-C97D-B36B-7D4F982C74A6}" name="UIComponents">
+        <GROUP id="{7E4E3A63-D395-0772-5492-5B7D370DA027}" name="ArrangementComponents">
+          <FILE id="RPRAXY" name="ArrangementPatternComponent.cpp" compile="1"
+                resource="0" file="Source/ArrangementPatternComponent.cpp"/>
+          <FILE id="udgiAp" name="ArrangementPatternComponent.h" compile="0"
+                resource="0" file="Source/ArrangementPatternComponent.h"/>
+          <FILE id="gYtThe" name="ArrangementSectionComponent.cpp" compile="1"
+                resource="0" file="Source/ArrangementSectionComponent.cpp"/>
+          <FILE id="goVY2t" name="ArrangementSectionComponent.h" compile="0"
+                resource="0" file="Source/ArrangementSectionComponent.h"/>
+          <FILE id="vNLOrk" name="ArrangementSectionControlsComponent.cpp" compile="1"
+                resource="0" file="Source/ArrangementSectionControlsComponent.cpp"/>
+          <FILE id="DuXnGU" name="ArrangementSectionControlsComponent.h" compile="0"
+                resource="0" file="Source/ArrangementSectionControlsComponent.h"/>
+          <FILE id="ESc8ec" name="ArrangementSectionsArea.cpp" compile="1" resource="0"
+                file="Source/ArrangementSectionsArea.cpp"/>
+          <FILE id="s0bh7T" name="ArrangementSectionsArea.h" compile="0" resource="0"
+                file="Source/ArrangementSectionsArea.h"/>
+          <FILE id="jnMCsa" name="ArrangementControlsArea.cpp" compile="1" resource="0"
+                file="Source/ArrangementControlsArea.cpp"/>
+          <FILE id="Ft2zpx" name="ArrangementControlsArea.h" compile="0" resource="0"
+                file="Source/ArrangementControlsArea.h"/>
+        </GROUP>
         <GROUP id="{5A113B8D-0FDF-2B33-27A3-F575FBA8189F}" name="RackComponents">
           <FILE id="CrL0lb" name="ConnectionTarget.cpp" compile="1" resource="0"
                 file="Source/ConnectionTarget.cpp"/>
@@ -107,22 +163,14 @@
           <FILE id="FzmaTC" name="TrackComponentMaster.h" compile="0" resource="0"
                 file="Source/TrackComponentMaster.h"/>
         </GROUP>
-        <FILE id="eGhJsJ" name="ArrangerAreaComponent.cpp" compile="1" resource="0"
-              file="Source/ArrangerAreaComponent.cpp"/>
-        <FILE id="pwpSVL" name="ArrangerAreaComponent.h" compile="0" resource="0"
-              file="Source/ArrangerAreaComponent.h"/>
         <FILE id="skdk6O" name="CommandIDs.h" compile="0" resource="0" file="Source/CommandIDs.h"/>
-        <FILE id="CG0Gw9" name="MainComponentMenuBar.cpp" compile="1" resource="0"
-              file="Source/MainComponentMenuBar.cpp"/>
         <FILE id="mM5FQ6" name="MainComponentMenuBar.h" compile="0" resource="0"
               file="Source/MainComponentMenuBar.h"/>
+        <FILE id="CG0Gw9" name="MainComponentMenuBar.cpp" compile="1" resource="0"
+              file="Source/MainComponentMenuBar.cpp"/>
         <FILE id="h2uozs" name="EditViewState.cpp" compile="1" resource="0"
               file="Source/EditViewState.cpp"/>
         <FILE id="Uz7cPH" name="EditViewState.h" compile="0" resource="0" file="Source/EditViewState.h"/>
-        <FILE id="CsKNLI" name="ArrangementPartComponent.cpp" compile="1" resource="0"
-              file="Source/ArrangementPartComponent.cpp"/>
-        <FILE id="ayK5Up" name="ArrangementPartComponent.h" compile="0" resource="0"
-              file="Source/ArrangementPartComponent.h"/>
         <FILE id="mXoO6s" name="EditComponent.cpp" compile="1" resource="0"
               file="Source/EditComponent.cpp"/>
         <FILE id="fiqyaT" name="EditComponent.h" compile="0" resource="0" file="Source/EditComponent.h"/>

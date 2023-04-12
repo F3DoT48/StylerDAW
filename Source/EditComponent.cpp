@@ -10,22 +10,32 @@
 
 #include <JuceHeader.h>
 #include "EditComponent.h"
+#include "StylerMainComponent.h"
 
 using namespace styler_app;
 
 //==============================================================================
 EditComponent::EditComponent (te::Edit& edit
-                            , te::SelectionManager& selectionManager)
-    : mEdit{ edit }
-    , mEditViewState{ edit, selectionManager }
-    , mNewTrackButton{ std::make_unique<juce::TextButton> ("Add new track") }
+                            , te::SelectionManager& selectionManager
+                            , Arrangement& arrangement
+                            , juce::Viewport& arrangementControlsAreaViewport)
+    : mEdit { edit }
+    , mEditViewState { edit, selectionManager }
+    , mArrangement { arrangement }
+    , mArrangementControlsAreaViewport { arrangementControlsAreaViewport }
+    , mArrangementSectionsArea { std::make_unique<ArrangementSectionsArea> (mArrangement) }
+    , mSectionsAreaViewport { std::make_unique<juce::Viewport> ("mSectionsAreaViewport") }
     , mUpdateTracks { false }
 {
     mEdit.state.addListener (this);
     mEditViewState.mSelectionManager.addChangeListener (this);
 
-    addAndMakeVisible (mNewTrackButton.get());
-    setupNewTrackButton();
+    mSectionsAreaViewport->setScrollBarsShown (false, false, false, false);
+    mSectionsAreaViewport->setViewedComponent (mArrangementSectionsArea.get(), false);
+
+    mArrangementControlsAreaViewport.getHorizontalScrollBar().addListener (this);
+
+    addAndMakeVisible (mSectionsAreaViewport.get());
 
     markAndUpdate (mUpdateTracks);
 }
@@ -34,6 +44,7 @@ EditComponent::~EditComponent()
 {
     mEditViewState.mSelectionManager.removeChangeListener (this);
     mEdit.state.removeListener (this);
+    mArrangementControlsAreaViewport.getHorizontalScrollBar().removeListener (this);
 }
 
 void EditComponent::paint (juce::Graphics& g)
@@ -49,7 +60,7 @@ void EditComponent::paint (juce::Graphics& g)
 void EditComponent::resized()
 {
     auto rec{ getLocalBounds() };
-    
+
     auto recInputAreas{ rec.removeFromLeft (TrackComponentAttributes::inputsAreaWidthInPixels) };
     auto recMixerControlsAreas{ rec.removeFromRight (TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels) };
     auto recPluginsAreas{ rec.removeFromRight (TrackComponentAttributes::pluginAreaWidthInPixels) };
@@ -114,22 +125,31 @@ void EditComponent::resized()
         mixerControlsArea->resized();
     }
 
-    const int buttonOffsetVertical{ (TrackComponentAttributes::minimumHeightInPixels
-                                   + TrackComponentAttributes::trackGapInPixels)
-                                  * (mPluginsAreasAudioTracks.size()
-                                   + mPluginsAreasPermanentTracks.size())};
+    auto rectForArrangmentSections { getLocalBounds() };
+    rectForArrangmentSections.setLeft (TrackComponentAttributes::inputsAreaWidthInPixels);
+    rectForArrangmentSections.setRight (getWidth()
+                                      - TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels
+                                      - TrackComponentAttributes::pluginAreaWidthInPixels);
+    rectForArrangmentSections.setBottom (recPluginsAreas.getY());
 
-    mNewTrackButton->setBounds (getWidth() - TrackComponentAttributes::newTrackButtonOffsetFromRight
-                              , buttonOffsetVertical
-                              , mNewTrackButton->getLookAndFeel().getTextButtonWidthToFitText (*mNewTrackButton
-                                                                                             , TrackComponentAttributes::newTrackButtonHeight)
-                              , TrackComponentAttributes::newTrackButtonHeight);
-    mNewTrackButton->resized();
+    mArrangementSectionsArea->setBounds (juce::Rectangle<int> (rectForArrangmentSections.getX()
+                                                             , rectForArrangmentSections.getY()
+                                                             , rectForArrangmentSections.getWidth()
+                                                             + (mArrangement.getAllSections().size()
+                                                              * ArrangementSectionComponent::sWidthInPixels)
+                                                             , rectForArrangmentSections.getHeight()));
+
+    mSectionsAreaViewport->setBounds (rectForArrangmentSections);
 }
 
 EditViewState& EditComponent::getEditViewState()
 {
     return mEditViewState;
+}
+
+juce::Viewport* EditComponent::getSectionsAreaViewport() const noexcept
+{
+    return mSectionsAreaViewport.get();
 }
 
 void EditComponent::buildTracks()
@@ -237,11 +257,12 @@ void EditComponent::valueTreeChildAdded (juce::ValueTree&, juce::ValueTree& chil
     if (te::TrackList::isTrack (child))
     {
         markAndUpdate (mUpdateTracks);
-        auto rect{getBounds ()};
+        auto rect { getBounds() };
         rect.setBottom (rect.getBottom() 
                       + TrackComponentAttributes::trackGapInPixels
                       + TrackComponentAttributes::minimumHeightInPixels);
         setBounds (rect);
+        findParentComponentOfClass<StylerMainComponent>()->getEditComponentViewport()->setViewPositionProportionately (0.0, 1.0);
     }
 }
 
@@ -251,7 +272,7 @@ void EditComponent::valueTreeChildRemoved (juce::ValueTree&, juce::ValueTree& ch
     if (te::TrackList::isTrack (child))
     {
         markAndUpdate (mUpdateTracks);
-        auto rect{getBounds()};
+        auto rect { getBounds() };
         rect.setBottom (rect.getBottom() 
                       - TrackComponentAttributes::trackGapInPixels
                       - TrackComponentAttributes::minimumHeightInPixels);
@@ -272,20 +293,8 @@ void EditComponent::changeListenerCallback (juce::ChangeBroadcaster*)
     repaint();     
 }
 
-void EditComponent::setupNewTrackButton()
+void EditComponent::scrollBarMoved (juce::ScrollBar*, double newRangeStart)
 {
-    mNewTrackButton->onClick = [this]
-    {
-        auto audioTracks{ getAudioTracks (mEdit) };
-        const int numGlobalTracks{ 5 };
-        if (audioTracks.size() < mEdit.engine.getEngineBehaviour().getEditLimits().maxNumTracks - numGlobalTracks)
-        {
-            mEdit.ensureNumberOfAudioTracks (audioTracks.size() + 1);
-            auto addedTrack { mEdit.getTrackList()[mEdit.getTrackList().size() - 1]};
-            auto rackTypePtr { mEdit.getRackList().addNewRack() };
-            auto rackInstanceCreationInfo { te::RackInstance::create (*rackTypePtr) };
-            auto rackFx { dynamic_cast<te::RackInstance*> (mEdit.getPluginCache().createNewPlugin (rackInstanceCreationInfo).get()) };
-            addedTrack->pluginList.insertPlugin (*rackFx, 0, &mEditViewState.mSelectionManager);
-        }
-    };
+    //mSectionsAreaViewport->setViewPosition (mArrangementControlsAreaViewport.getViewPosition());
+    mSectionsAreaViewport->getHorizontalScrollBar().setCurrentRangeStart (newRangeStart);
 }

@@ -26,8 +26,8 @@ namespace styler_app
         static constexpr int arrangementPartWidthInPixels{ 200 };
         static constexpr int pluginAreaWidthInPixels{ 200 };
 
-        static constexpr int newTrackButtonOffsetFromRight{ 150 };
-        static constexpr int newTrackButtonHeight{ 30 };
+       // static constexpr int newTrackButtonOffsetFromRight{ 150 };
+       // static constexpr int newTrackButtonHeight{ 30 };
     };
 
     class TrackComponent : public juce::Component

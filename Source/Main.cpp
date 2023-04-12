@@ -26,6 +26,7 @@ public:
         // This method is where you should put your application's initialisation code..
 
         mMainWindow.reset (new MainWindow (getApplicationName()));
+        mMainWindow->maximiseButtonPressed();
     }
 
     void shutdown() override

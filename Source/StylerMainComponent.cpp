@@ -9,11 +9,14 @@ using namespace styler_app;
 //==============================================================================
 StylerMainComponent::StylerMainComponent()
     : mTracktionEngine{ juce::String (ProjectInfo::projectName)
-                      , std::make_unique<styler_app::StylerUIBehaviour>()
-                      , std::make_unique<styler_app::StylerTracktionEngineBehaviour>() }
+                      , std::make_unique<StylerUIBehaviour>()
+                      , std::make_unique<StylerTracktionEngineBehaviour>() }
     , mSelectionManager{ mTracktionEngine }
-    , mEditComponentViewport{ std::make_unique<juce::Viewport> ("EditComponentViewport") }
-    , mMenuBar{ std::make_unique<styler_app::MainComponentMenuBar> (mCommandManager) }
+    , mMenuBar { std::make_unique<MainComponentMenuBar> (mCommandManager) }
+    , mNewTrackButton { std::make_unique<juce::TextButton> ("Add new track") }
+    , mNewArrangementSectionButton { std::make_unique<juce::TextButton> ("Add new section") }
+    , mArrangementControlsAreaViewport { std::make_unique<juce::Viewport> ("ArrangementControlsAreaViewport") }
+    , mEditComponentViewport { std::make_unique<juce::Viewport> ("EditComponentViewport") }
 {
     auto directory = juce::File::getSpecialLocation (juce::File::tempDirectory).getChildFile ("Styler");
     directory.createDirectory();
@@ -27,6 +30,7 @@ StylerMainComponent::StylerMainComponent()
     {
         createOrLoadEdit (directory.getNonexistentChildFile ("NewEdit", ".tracktionedit", false));
     }
+
     mSelectionManager.addChangeListener (this);
 
     mCommandManager.registerAllCommandsForTarget (this);
@@ -37,9 +41,18 @@ StylerMainComponent::StylerMainComponent()
 
     mEdit->getUndoManager().clearUndoHistory();
 
+    addAndMakeVisible (mNewTrackButton.get());
+    setupNewTrackButton();
+    
+    addAndMakeVisible (mNewArrangementSectionButton.get());
+    setupNewArrangementSectionButton();
+
     addAndMakeVisible (mMenuBar.get());
 
-    setSize (1024, 768);
+    addAndMakeVisible (mArrangementControlsAreaViewport.get());
+    addAndMakeVisible (mEditComponentViewport.get());
+
+    setSize (1024, 768);    
 }
 
 StylerMainComponent::~StylerMainComponent()
@@ -67,21 +80,55 @@ void StylerMainComponent::resized()
 
     mMenuBar->setBounds (rectangle.removeFromTop (juce::LookAndFeel::getDefaultLookAndFeel().getDefaultMenuBarHeight()));
 
+    auto rectForArrangementControlsAndButtons { rectangle.removeFromTop (ArrangementControlsArea::sHeightInPixels) };
+    rectForArrangementControlsAndButtons.removeFromLeft (TrackComponentAttributes::inputsAreaWidthInPixels);
+
+    auto recForButtons { rectForArrangementControlsAndButtons.removeFromRight (TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels
+                                                                             + juce::LookAndFeel::getDefaultLookAndFeel().getDefaultScrollbarWidth())
+                                                             .removeFromLeft (TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels) };
+    
+    mNewTrackButton->setBounds (recForButtons.removeFromTop (sAreaForButtonsHeight));
+    mNewTrackButton->resized();
+
+    mNewArrangementSectionButton->setBounds (recForButtons);
+    mNewArrangementSectionButton->resized();
+
+    rectForArrangementControlsAndButtons.removeFromRight (TrackComponentAttributes::pluginAreaWidthInPixels);
+
+    if (mArrangementControlsArea != nullptr)
+    {
+        auto rectForArrangementControlsArea { rectForArrangementControlsAndButtons };
+
+        rectForArrangementControlsArea.setRight (rectForArrangementControlsArea.getX()
+                                               + (mArrangement->getAllSections().size()
+                                                * ArrangementSectionControlsComponent::sWidthInPixels));
+
+        rectForArrangementControlsArea.setBottom (rectForArrangementControlsArea.getBottom()
+                                                - juce::LookAndFeel::getDefaultLookAndFeel().getDefaultScrollbarWidth());
+
+        mArrangementControlsArea->setBounds (rectForArrangementControlsArea);
+    }
+
+    mArrangementControlsAreaViewport->setBounds (rectForArrangementControlsAndButtons);
+
     if (mEditComponent != nullptr)
     {
-        rectangle.setBottom (rectangle.getY()
-                           + mEdit->getTrackList().size()
-                           * (TrackComponentAttributes::minimumHeightInPixels 
-                            + TrackComponentAttributes::trackGapInPixels)
-                           + TrackComponentAttributes::newTrackButtonHeight);
-        auto rectForEditComponent = rectangle;
+        auto rectForEditComponent { rectangle };
+
+        rectForEditComponent.setBottom (rectForEditComponent.getY()
+                                      + (mEdit->getTrackList().size() - 3) // 2 te + 1 audio track are hidden
+                                      * (TrackComponentAttributes::minimumHeightInPixels 
+                                       + TrackComponentAttributes::trackGapInPixels));
         
         rectForEditComponent.setRight (rectForEditComponent.getRight()
                                      - juce::LookAndFeel::getDefaultLookAndFeel().getDefaultScrollbarWidth());
 
         mEditComponent->setBounds (rectForEditComponent);
-        mEditComponentViewport->setBounds (rectangle.removeFromTop (500));
     }
+
+    mEditComponentViewport->setBounds (rectangle.removeFromTop (7 // tracks
+                                                              * (TrackComponentAttributes::minimumHeightInPixels
+                                                               + TrackComponentAttributes::trackGapInPixels)));
 }
 
 juce::ApplicationCommandTarget* styler_app::StylerMainComponent::getNextCommandTarget()
@@ -162,6 +209,7 @@ bool styler_app::StylerMainComponent::perform (const InvocationInfo& invocationI
     {
     case CommandIDs::fileNew:
         createOrLoadEdit ({});
+        mEdit->getUndoManager().clearUndoHistory();
         break;
     case CommandIDs::fileOpen:
     {   
@@ -169,6 +217,7 @@ bool styler_app::StylerMainComponent::perform (const InvocationInfo& invocationI
         if (fileChooser.browseForFileToOpen())
         {
             createOrLoadEdit (fileChooser.getResult());
+            mEdit->getUndoManager().clearUndoHistory();
         }        
     }
         break;
@@ -231,18 +280,35 @@ void StylerMainComponent::createOrLoadEdit (juce::File editFile = {})
         else
             return;
     }
-
+    
     mSelectionManager.deselectAll();
     mEditComponent = nullptr;
 
     if (editFile.existsAsFile())
     {
         mEdit = te::loadEditFromFile (mTracktionEngine, editFile);
+        mArrangement = std::make_unique<Arrangement>(*mEdit);
     }
     else
     {
         mEdit = te::createEmptyEdit (mTracktionEngine, editFile);
-        mEdit->ensureNumberOfAudioTracks (1);
+        mEdit->ensureNumberOfAudioTracks (2); // 1 hidden and 1 displayed tracks
+
+        // add racks to audio  tracks
+        auto audioTracks { getAudioTracks(*mEdit) };
+        
+        for (auto audioTrack : audioTracks)
+        {
+            auto rackTypePtr { mEdit->getRackList().addNewRack() };
+            auto rackInstanceCreationInfo { te::RackInstance::create (*rackTypePtr) };
+            auto rackFx { dynamic_cast<te::RackInstance*> (mEdit->getPluginCache().createNewPlugin (rackInstanceCreationInfo).get()) };
+            audioTrack->pluginList.insertPlugin (*rackFx, 0, &mSelectionManager);
+        }
+
+        //mArrangement = Arrangement::createArrangementForNewEditAndAddToState (*mEdit);
+        auto arrangementState { Arrangement::createArrangement (*mEdit) };
+        mEdit->state.appendChild (arrangementState, nullptr);
+        mArrangement = std::make_unique<Arrangement> (*mEdit);
     }
 
     mEdit->playInStopEnabled = true;
@@ -253,15 +319,13 @@ void StylerMainComponent::createOrLoadEdit (juce::File editFile = {})
 
     enableAllInputs();
 
-    removeChildComponent (mEditComponent.get());
+    mArrangementControlsArea = std::make_unique<ArrangementControlsArea> (*mArrangement);
 
-    mEditComponent = std::make_unique<EditComponent> (*mEdit, mSelectionManager);
+    mArrangementControlsAreaViewport->setViewedComponent (mArrangementControlsArea.get(), false);
 
-    addChildComponent (mEditComponent.get());    
-    
-    mEditComponentViewport->setViewedComponent (mEditComponent.get());
+    mEditComponent = std::make_unique<EditComponent> (*mEdit, mSelectionManager, *mArrangement, *mArrangementControlsAreaViewport);
 
-    addAndMakeVisible (mEditComponentViewport.get());
+    mEditComponentViewport->setViewedComponent (mEditComponent.get(), false);
 
     setTopLevelComponentName();
 }
@@ -309,3 +373,39 @@ void StylerMainComponent::setTopLevelComponentName()
     getTopLevelComponent()->setName (te::EditFileOperations (*mEdit).getEditFile().getFileName());
 }
 
+juce::Viewport* StylerMainComponent::getEditComponentViewport() const noexcept
+{
+    return mEditComponentViewport.get();
+}
+
+juce::Viewport* StylerMainComponent::getArrangementControlsAreaViewport() const noexcept
+{
+    return mArrangementControlsAreaViewport.get();
+}
+
+
+void StylerMainComponent::setupNewTrackButton()
+{
+    mNewTrackButton->onClick = [this]
+    {
+        auto audioTracks {getAudioTracks(*mEdit)};
+        const int numGlobalTracks { 5 };
+        if (audioTracks.size() < mEdit->engine.getEngineBehaviour().getEditLimits().maxNumTracks - numGlobalTracks)
+        {
+            mEdit->ensureNumberOfAudioTracks (audioTracks.size() + 1);
+            auto addedTrack { mEdit->getTrackList()[mEdit->getTrackList().size() - 1] };
+            auto rackTypePtr { mEdit->getRackList().addNewRack() };
+            auto rackInstanceCreationInfo { te::RackInstance::create (*rackTypePtr) };
+            auto rackFx { dynamic_cast<te::RackInstance*> (mEdit->getPluginCache().createNewPlugin(rackInstanceCreationInfo).get()) };
+            addedTrack->pluginList.insertPlugin (*rackFx, 0, &mSelectionManager);
+        }
+    };
+}
+
+void StylerMainComponent::setupNewArrangementSectionButton()
+{
+    mNewArrangementSectionButton->onClick = [this]
+    {
+        mArrangement->addNewSection();
+    };
+}

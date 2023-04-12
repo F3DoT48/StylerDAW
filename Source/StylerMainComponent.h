@@ -4,6 +4,8 @@
 #include "EditComponent.h"
 #include "CommandIDs.h"
 #include "MainComponentMenuBar.h"
+#include "Arrangement.h"
+#include "ArrangementControlsArea.h"
 
 namespace te = tracktion_engine;
 
@@ -31,22 +33,36 @@ namespace styler_app
 
         void setTopLevelComponentName();
 
+        juce::Viewport* getEditComponentViewport() const noexcept;
+        juce::Viewport* getArrangementControlsAreaViewport() const noexcept;
+
+        static constexpr int sAreaForButtonsHeight { 30 };
+
     private:
         te::Engine mTracktionEngine;
         te::SelectionManager mSelectionManager;
         std::unique_ptr<te::Edit> mEdit;
         juce::ApplicationCommandManager mCommandManager;
+        std::unique_ptr<MainComponentMenuBar> mMenuBar;
+        std::unique_ptr<Arrangement> mArrangement;
 
+        std::unique_ptr<juce::TextButton> mNewTrackButton;
+        std::unique_ptr<juce::TextButton> mNewArrangementSectionButton;
+
+        std::unique_ptr<ArrangementControlsArea> mArrangementControlsArea;
+        std::unique_ptr<juce::Viewport> mArrangementControlsAreaViewport;
+
+        std::unique_ptr<EditComponent> mEditComponent;
         std::unique_ptr<juce::Viewport> mEditComponentViewport;
-        std::unique_ptr<styler_app::EditComponent> mEditComponent;
-
-        std::unique_ptr<styler_app::MainComponentMenuBar> mMenuBar;
 
         void changeListenerCallback (juce::ChangeBroadcaster*) override;
 
         void createOrLoadEdit (juce::File);
         void enableAllInputs();
 
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StylerMainComponent)
+        void setupNewTrackButton();
+        void setupNewArrangementSectionButton();
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StylerMainComponent)
     };
 }
