@@ -34,12 +34,12 @@ MidiSequence::MidiSequence (const juce::ValueTree& valueTree
 
     mNoteList = std::make_unique<EventList<MidiNote>> (mState);
 
-    startTimer (sTimerPeriodInMilliseconds);
+    //startTimer (sTimerPeriodInMilliseconds);
 }
 
 MidiSequence::~MidiSequence()
 {
-    stopTimer();
+    //stopTimer();
 }
 
 juce::ValueTree MidiSequence::createMidiSequence (te::MidiChannel midiChannel)
@@ -71,11 +71,11 @@ void MidiSequence::generateAndCacheForAudioThread()
     mAtomicSharedForAudioThread.exchange (copyOfThis);
 }
 
-void MidiSequence::timerCallback()
+/*void MidiSequence::timerCallback()
 {
     generateAndCacheForAudioThread();
     mGarbagePool.cleanUp();
-}
+}*/
 
 template<>
 struct MidiSequence::EventDelegate<MidiNote>

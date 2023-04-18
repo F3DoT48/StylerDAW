@@ -13,8 +13,8 @@
 using namespace styler_app;
 
 StylerTracktionEngineBehaviour::StylerTracktionEngineBehaviour()
-    : mEditLimits{ .maxNumTracks{ 5 + 10 } // 5 top level tracks (master, chord, tempo, marker, arranger) + 10 user audio tracks
-                 , .maxClipsInTrack{ 16 } // a proxy to arrangement parts
+    : mEditLimits{ .maxNumTracks{ 5 + 1 + 16 } // 5 te top level tracks (master, chord, tempo, marker, arranger) + 1 hidden track + 16 user audio tracks
+                 , .maxClipsInTrack{ 20 } // a proxy to arrangement parts ?
                  , .maxPluginsOnClip{ 0 } // what is a plugin on a clip?
                  , .maxPluginsOnTrack{ 1 + 1 + 3 } // 1 rack with arrangement part players + 1 rack with user plugins + stereo processor + volume/pan + meters 
                  , .maxNumMasterPlugins{ 1 + 3 } } // 1 rack with user plugins + stereo processor + volume/pan + meters 

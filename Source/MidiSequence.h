@@ -78,7 +78,7 @@ namespace styler_app
         };
     }
 
-    class MidiSequence : private juce::Timer
+    class MidiSequence //: private juce::Timer
     {
     public:
         MidiSequence() = delete;
@@ -231,7 +231,7 @@ namespace styler_app
         GarbagePoolOfSharedPtr<MidiSequence> mGarbagePool;
         std::atomic<std::shared_ptr<MidiSequence>> mAtomicSharedForAudioThread; // perhaps <MidiMessageSequence> directly?
 
-        void timerCallback() override;
+        //void timerCallback() override;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiSequence)
     };
