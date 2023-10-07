@@ -18,6 +18,8 @@ ArrangementSectionComponent::ArrangementSectionComponent (Arrangement& arrangeme
                                                         , ArrangementSection::Ptr section)
     : mArrangement { arrangement }
     , mArrangementSection { section }
+    , mPatterns {}
+    , mUpdatePatterns { true }
 {
     mArrangementSection->mState.addListener (this);
 
@@ -47,14 +49,20 @@ void ArrangementSectionComponent::resized()
     auto rec { getLocalBounds()};
 
     rec.removeFromTop (3 // permanent tracks
-                     * (TrackComponentAttributes::minimumHeightInPixels
-                      + TrackComponentAttributes::trackGapInPixels));
+                     * (TrackComponentAttributes::minimumHeightInPixels));
 
     for (auto pattern : mPatterns)
     {
-        pattern->setBounds (rec.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
-                                             + TrackComponentAttributes::trackGapInPixels));
+        pattern->setBounds (rec.removeFromTop (TrackComponentAttributes::minimumHeightInPixels));
         pattern->resized();
+    }
+}
+
+void ArrangementSectionComponent::valueTreePropertyChanged (juce::ValueTree& tree, const juce::Identifier&)
+{
+    if (tree.hasType (ArrangerIDs::arrangementSection))
+    {
+        markAndUpdate (mUpdatePatterns);
     }
 }
 
@@ -74,6 +82,11 @@ void ArrangementSectionComponent::valueTreeChildRemoved (juce::ValueTree&, juce:
     }
 }
 
+void ArrangementSectionComponent::valueTreeChildOrderChanged (juce::ValueTree&, int, int)
+{
+    markAndUpdate (mUpdatePatterns);
+}
+
 void ArrangementSectionComponent::handleAsyncUpdate()
 {
     if (compareAndReset (mUpdatePatterns))
@@ -91,11 +104,15 @@ void ArrangementSectionComponent::buildPatterns()
 {
     mPatterns.clear();
 
-    for (auto pattern : mArrangementSection->getAllPatterns())
+    if (auto& patterns { mArrangementSection->getAllPatterns() }; 
+        !patterns.isEmpty())
     {
-        auto* tmpPatternComponent { new ArrangementPatternComponent () };
-        mPatterns.add (tmpPatternComponent);
-        addAndMakeVisible (tmpPatternComponent);
+        for (ArrangementPattern::Ptr pattern : patterns)
+        {
+            auto* tmpPatternComponent { new ArrangementPatternComponent (pattern, *mArrangementSection) };
+            mPatterns.add (tmpPatternComponent);
+            addAndMakeVisible (tmpPatternComponent);
+        }
     }
 
     resized();

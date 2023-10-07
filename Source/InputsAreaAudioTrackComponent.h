@@ -30,6 +30,7 @@ namespace styler_app
     private:
         te::AudioTrack::Ptr mAudioTrack;
 
+        juce::Label mNameLabel;
         juce::TextButton mDeleteTrackButton;
         juce::TextButton mMidiInputSelectorButton;
         juce::TextButton mAudioInputSelectorButton;

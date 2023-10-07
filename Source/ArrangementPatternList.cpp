@@ -10,14 +10,17 @@
 
 #include "ArrangementPatternList.h"
 #include "ArrangerIDs.h"
+//#include "ArrangementSection.h"
 
 using namespace styler_app;
 
 ArrangementPatternList::ArrangementPatternList (te::Edit& edit
+                                              //, juce::ReferenceCountedObjectPtr<ArrangementSection> arrangementSection
                                               , const juce::ValueTree& parentState
                                               , juce::UndoManager* undoManager)
     : te::ValueTreeObjectList<ArrangementPattern> {parentState}
     , mEdit {edit}
+    //, mSection {arrangementSection}
 {
     rebuildObjects();
 }
@@ -34,10 +37,20 @@ bool ArrangementPatternList::isSuitableType (const juce::ValueTree& arrPatternSt
 
 ArrangementPattern* ArrangementPatternList::createNewObject (const juce::ValueTree& arrPatternState)
 {
-    ArrangementPattern::Ptr arrPatternPtr { new ArrangementPattern (arrPatternState, nullptr) };
+    /*ArrangementPattern::Ptr arrPatternPtr {new ArrangementPattern (mEdit
+                                                                  //, mSection
+                                                                  , arrPatternState
+                                                                  , nullptr) };
     arrPatternPtr->incReferenceCount();
 
-    return arrPatternPtr.get();
+    return arrPatternPtr.get();*/
+
+    ArrangementPattern* arrPatternPtr { new ArrangementPattern (mEdit
+                                                              , arrPatternState
+                                                              , nullptr) };
+    arrPatternPtr->incReferenceCount();
+
+    return arrPatternPtr;
 }
 
 void ArrangementPatternList::deleteObject (ArrangementPattern* arrPatternPtr)

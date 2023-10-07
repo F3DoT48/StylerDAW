@@ -20,7 +20,7 @@ namespace styler_app
     struct TrackComponentAttributes
     {
         static constexpr int minimumHeightInPixels{ 80 };
-        static constexpr int trackGapInPixels{ 2 };
+        //static constexpr int trackGapInPixels{ 2 };
         static constexpr int inputsAreaWidthInPixels{ 200 };
         static constexpr int mixerControlsParametersAreaWidthInPixels{ 200 };
         static constexpr int arrangementPartWidthInPixels{ 200 };

@@ -19,10 +19,13 @@ namespace styler_app
 {
     class PluginsRackWindow : public juce::DocumentWindow
     {
-        public:
-            PluginsRackWindow(const juce::String& name);
-            ~PluginsRackWindow() override;
+    public:
+        PluginsRackWindow(const juce::String& name);
+        ~PluginsRackWindow() override;
 
-            void closeButtonPressed() override;
+        void closeButtonPressed() override;
+
+    private:
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginsRackWindow)
     };
 }

@@ -31,7 +31,7 @@ namespace styler_app
         void paint (juce::Graphics&) override;
         void resized() override;
 
-        static constexpr int sHeightInPixels { 80 };
+        static constexpr int sHeightInPixels { 100 };
 
     private:
         Arrangement& mArrangement;

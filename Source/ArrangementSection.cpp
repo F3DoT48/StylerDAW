@@ -9,7 +9,6 @@
 */
 
 #include "ArrangementSection.h"
-
 #include "ArrangerIDs.h"
 
 using namespace styler_app;
@@ -17,15 +16,23 @@ using namespace styler_app;
 ArrangementSection::ArrangementSection (te::Edit& edit
                                       , const juce::ValueTree& valueTree
                                       , juce::UndoManager* undoManager)
-    : mEdit { edit }
+    : te::EditItem {te::EditItemID::readOrCreateNewID (edit, valueTree), edit }
     , mState { valueTree }
+    , mEdit { edit }
     , mPatterns { std::make_unique<ArrangementPatternList> (mEdit
                                                           , mState
                                                           , nullptr) }
 {
     jassert (valueTree.hasType (ArrangerIDs::arrangementSection));
 
-    mLengthInBars = static_cast<int> (valueTree.getProperty (ArrangerIDs::lengthInBars));
+    mSectionName.referTo (mState
+                        , ArrangerIDs::arrangementSectionName
+                        , undoManager);
+
+    mLengthInBars.referTo (mState
+                         , ArrangerIDs::lengthInBars
+                         , undoManager);
+
     switch (static_cast<int> (valueTree.getProperty (ArrangerIDs::playbackMode)))
     {
         case 0:
@@ -45,6 +52,11 @@ ArrangementSection::ArrangementSection (te::Edit& edit
             break;
     }
 
+    /*mPatterns = std::make_unique<ArrangementPatternList> (mEdit
+                                                        , this
+                                                        , mState
+                                                        , nullptr);*/
+
     mEdit.state.addListener (this);
 }
 
@@ -56,7 +68,7 @@ ArrangementSection::~ArrangementSection()
 juce::ValueTree ArrangementSection::createSection (const te::Edit& edit)
 {
     auto valueTree { te::createValueTree (ArrangerIDs::arrangementSection
-                                        //, ArrangerIDs::arrangementSectionIndex, sectionId
+                                        , ArrangerIDs::arrangementSectionName, juce::String ("Arrangement section")
                                         , ArrangerIDs::lengthInBars, sMinLengthInBars
                                         , ArrangerIDs::playbackMode, static_cast<int> (PlaybackMode::loop)) };
 
@@ -65,19 +77,35 @@ juce::ValueTree ArrangementSection::createSection (const te::Edit& edit)
     // 0th audio track is hidden for chord detection
     for (int trackId { 1 }; trackId < tracks.size(); ++trackId)
     {
-        valueTree.appendChild (ArrangementPattern::createArrangementPattern (te::EditItemID::fromVar (tracks[trackId]->state.getProperty (te::IDs::id)))
+        /*valueTree.appendChild (ArrangementPattern::createArrangementPattern (te::EditItemID::fromVar (tracks[trackId]->state.getProperty (te::IDs::id)))
+                             , nullptr);*/
+        valueTree.appendChild (ArrangementPattern::createArrangementPattern (tracks[trackId]->itemID)
                              , nullptr);
     }
 
     return valueTree;
 }
 
-ArrangementPatternList& ArrangementSection::getAllPatterns() noexcept
+ArrangementPatternList& ArrangementSection::getAllPatterns()
 {
+    jassert (mPatterns != nullptr);
     return *mPatterns;
 }
 
-int ArrangementSection::getLengthInBars() const noexcept
+juce::String ArrangementSection::getName() const
+{
+    return mSectionName;
+}
+
+void ArrangementSection::setName (const juce::String& name)
+{
+    auto newName { name.substring (0, 64) };
+
+    if (mSectionName != newName)
+        mSectionName = newName;
+}
+
+int ArrangementSection::getLengthInBars() const
 {
     return mLengthInBars;
 }
@@ -85,13 +113,10 @@ int ArrangementSection::getLengthInBars() const noexcept
 void ArrangementSection::setLengthInBars (int newLengthInBars, juce::UndoManager* undoManager)
 {
     if (mLengthInBars != newLengthInBars)
-    {
-        mState.setProperty (ArrangerIDs::lengthInBars, newLengthInBars, undoManager);
         mLengthInBars = newLengthInBars;
-    }
 }
 
-ArrangementSection::PlaybackMode ArrangementSection::getPlaybackMode() const noexcept
+ArrangementSection::PlaybackMode ArrangementSection::getPlaybackMode() const
 {
     return mPlaybackMode;
 }
@@ -121,9 +146,9 @@ void ArrangementSection::valueTreeChildRemoved (juce::ValueTree& parent
 {
     if (te::TrackList::isTrack (child))
     {
-        mState.removeChild (mState.getChildWithProperty (ArrangerIDs::arrangerTrackId
+        mState.removeChild (mState.getChildWithProperty (ArrangerIDs::arrangementTrackId
                                                        , child.getProperty (te::IDs::id))
-                           , nullptr);
+                          , nullptr);
     }
 }
 

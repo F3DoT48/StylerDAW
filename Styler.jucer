@@ -7,6 +7,22 @@
   <MAINGROUP id="dKXk2I" name="Styler">
     <GROUP id="{193BEC45-31AE-BA32-125F-DDB153D83742}" name="Source">
       <GROUP id="{F50B6CD9-BD88-CD42-DC54-80384AEF6AEB}" name="ArrangerEngine">
+        <FILE id="vHb0CZ" name="ArrangementForAudioThreadGenerator.cpp" compile="1"
+              resource="0" file="Source/ArrangementForAudioThreadGenerator.cpp"/>
+        <FILE id="k5VX4l" name="ArrangementForAudioThreadGenerator.h" compile="0"
+              resource="0" file="Source/ArrangementForAudioThreadGenerator.h"/>
+        <FILE id="MxsZ3M" name="ArrangementController.cpp" compile="1" resource="0"
+              file="Source/ArrangementController.cpp"/>
+        <FILE id="HvHS6r" name="ArrangementController.h" compile="0" resource="0"
+              file="Source/ArrangementController.h"/>
+        <FILE id="GZR7lo" name="ArrangementControllerPlugin.cpp" compile="1"
+              resource="0" file="Source/ArrangementControllerPlugin.cpp"/>
+        <FILE id="JKvV63" name="ArrangementControllerPlugin.h" compile="0"
+              resource="0" file="Source/ArrangementControllerPlugin.h"/>
+        <FILE id="LYJ6j2" name="PatternPlayerPlugin.cpp" compile="1" resource="0"
+              file="Source/PatternPlayerPlugin.cpp"/>
+        <FILE id="wf83FT" name="PatternPlayerPlugin.h" compile="0" resource="0"
+              file="Source/PatternPlayerPlugin.h"/>
         <FILE id="iw2PO9" name="ArrangementSectionList.cpp" compile="1" resource="0"
               file="Source/ArrangementSectionList.cpp"/>
         <FILE id="IeH6dj" name="ArrangementSectionList.h" compile="0" resource="0"
@@ -40,8 +56,153 @@
         <FILE id="pHcO2X" name="NoteTranspositionRule.h" compile="0" resource="0"
               file="Source/NoteTranspositionRule.h"/>
       </GROUP>
+      <GROUP id="{ABF0D6B6-D955-1475-7359-2F4F7F0B9909}" name="ChordDetector">
+        <FILE id="W4ORfb" name="Chord.cpp" compile="1" resource="0" file="Source/Chord.cpp"/>
+        <FILE id="AN6MsO" name="Chord.h" compile="0" resource="0" file="Source/Chord.h"/>
+        <FILE id="mQUbVk" name="ChordDetector.cpp" compile="1" resource="0"
+              file="Source/ChordDetector.cpp"/>
+        <FILE id="KihYhO" name="ChordDetector.h" compile="0" resource="0" file="Source/ChordDetector.h"/>
+        <FILE id="Fi4RNZ" name="KnownChords.h" compile="0" resource="0" file="Source/KnownChords.h"/>
+      </GROUP>
+      <GROUP id="{62C9D92C-AC81-D2BB-8420-D78466B77CE5}" name="Misc">
+        <FILE id="dJDqjy" name="GarbagePoolOfSharedPtr.h" compile="0" resource="0"
+              file="Source/GarbagePoolOfSharedPtr.h"/>
+      </GROUP>
+      <GROUP id="{DBB64C67-AA12-FF26-85C0-956FF05620A0}" name="TracktionEngineCustomization">
+        <FILE id="OoNVnD" name="Utilities.h" compile="0" resource="0" file="Source/Utilities.h"/>
+        <FILE id="lfBFUc" name="StylerTracktionEngineBehaviour.h" compile="0"
+              resource="0" file="Source/StylerTracktionEngineBehaviour.h"/>
+        <FILE id="B44ppP" name="StylerTracktionEngineBehaviour.cpp" compile="1"
+              resource="0" file="Source/StylerTracktionEngineBehaviour.cpp"/>
+        <FILE id="IUzDQm" name="StylerUIBehaviour.h" compile="0" resource="0"
+              file="Source/StylerUIBehaviour.h"/>
+        <FILE id="wemMGM" name="StylerUIBehaviour.cpp" compile="1" resource="0"
+              file="Source/StylerUIBehaviour.cpp"/>
+      </GROUP>
       <GROUP id="{58B67417-1632-C97D-B36B-7D4F982C74A6}" name="UIComponents">
+        <FILE id="xacj6v" name="PlayStopButtonComponent.cpp" compile="1" resource="0"
+              file="Source/PlayStopButtonComponent.cpp"/>
+        <FILE id="IAPDC7" name="PlayStopButtonComponent.h" compile="0" resource="0"
+              file="Source/PlayStopButtonComponent.h"/>
+        <GROUP id="{E03E61BD-A07C-6EEF-F70D-C1D1BC8657F5}" name="Misc">
+          <FILE id="ur9Ev3" name="ScrollAndDragSelectorComponent.h" compile="0"
+                resource="0" file="Source/ScrollAndDragSelectorComponent.h"/>
+        </GROUP>
+        <GROUP id="{F5C4E47A-8F9D-A4B0-56DB-E756343F4089}" name="TimeSignatureDisplay">
+          <FILE id="Uzm70Y" name="TimeSignatureDisplayComponent.cpp" compile="1"
+                resource="0" file="Source/TimeSignatureDisplayComponent.cpp"/>
+          <FILE id="XPflJR" name="TimeSignatureDisplayComponent.h" compile="0"
+                resource="0" file="Source/TimeSignatureDisplayComponent.h"/>
+        </GROUP>
+        <GROUP id="{A72FBC4C-1D78-4A1C-B45F-13EA3A66385B}" name="TempoDisplay">
+          <FILE id="XsQlv9" name="TempoDisplayComponent.cpp" compile="1" resource="0"
+                file="Source/TempoDisplayComponent.cpp"/>
+          <FILE id="rxnds0" name="TempoDisplayComponent.h" compile="0" resource="0"
+                file="Source/TempoDisplayComponent.h"/>
+          <FILE id="PHUAxy" name="TempoSelectorComponent.cpp" compile="1" resource="0"
+                file="Source/TempoSelectorComponent.cpp"/>
+          <FILE id="SjAeG2" name="TempoSelectorComponent.h" compile="0" resource="0"
+                file="Source/TempoSelectorComponent.h"/>
+        </GROUP>
+        <GROUP id="{FF844A69-6454-AE13-A35C-F9196D184852}" name="ChordDetectorComponent">
+          <FILE id="tnUz0i" name="ChordDetectorMidiInSelectorComponent.cpp" compile="1"
+                resource="0" file="Source/ChordDetectorMidiInSelectorComponent.cpp"/>
+          <FILE id="QQxgnS" name="ChordDetectorMidiInSelectorComponent.h" compile="0"
+                resource="0" file="Source/ChordDetectorMidiInSelectorComponent.h"/>
+          <FILE id="n3NyCA" name="DetectedChordDisplayComponent.cpp" compile="1"
+                resource="0" file="Source/DetectedChordDisplayComponent.cpp"/>
+          <FILE id="TiOmgY" name="DetectedChordDisplayComponent.h" compile="0"
+                resource="0" file="Source/DetectedChordDisplayComponent.h"/>
+          <FILE id="Lacr36" name="KeyDisplayComponent.cpp" compile="1" resource="0"
+                file="Source/KeyDisplayComponent.cpp"/>
+          <FILE id="RkU9Ar" name="KeyDisplayComponent.h" compile="0" resource="0"
+                file="Source/KeyDisplayComponent.h"/>
+        </GROUP>
+        <GROUP id="{C465B766-F0C0-EED2-51FA-2D8B9FB026C9}" name="PianoRollComponents">
+          <GROUP id="{E318C1BA-1FE8-0238-D8D6-ED2AF52C0789}" name="EventEditorComponents">
+            <FILE id="glVhEd" name="PREventEditorComponent.cpp" compile="1" resource="0"
+                  file="Source/PREventEditorComponent.cpp"/>
+            <FILE id="TvxPpe" name="PREventEditorComponent.h" compile="0" resource="0"
+                  file="Source/PREventEditorComponent.h"/>
+          </GROUP>
+          <GROUP id="{23C71254-F87B-6BB4-EED2-1D122BE1F99B}" name="NoteEditorComponents">
+            <FILE id="oIa4Oc" name="StepwiseRightEdgeBoundConstsrainer.cpp" compile="1"
+                  resource="0" file="Source/StepwiseRightEdgeBoundConstsrainer.cpp"/>
+            <FILE id="Z8bfNS" name="StepwiseRightEdgeBoundConstsrainer.h" compile="0"
+                  resource="0" file="Source/StepwiseRightEdgeBoundConstsrainer.h"/>
+            <FILE id="ILXwff" name="PRNoteComponent.cpp" compile="1" resource="0"
+                  file="Source/PRNoteComponent.cpp"/>
+            <FILE id="HudrM6" name="PRNoteComponent.h" compile="0" resource="0"
+                  file="Source/PRNoteComponent.h"/>
+            <FILE id="v8Ny0e" name="MeasureRulerComponent.cpp" compile="1" resource="0"
+                  file="Source/MeasureRulerComponent.cpp"/>
+            <FILE id="cZzW23" name="MeasureRulerComponent.h" compile="0" resource="0"
+                  file="Source/MeasureRulerComponent.h"/>
+            <FILE id="LegB3T" name="PRGridComponent.cpp" compile="1" resource="0"
+                  file="Source/PRGridComponent.cpp"/>
+            <FILE id="GOUzgb" name="PRGridComponent.h" compile="0" resource="0"
+                  file="Source/PRGridComponent.h"/>
+            <FILE id="VnlJFG" name="PRKeyboardComponent.cpp" compile="1" resource="0"
+                  file="Source/PRKeyboardComponent.cpp"/>
+            <FILE id="FOQDAR" name="PRKeyboardComponent.h" compile="0" resource="0"
+                  file="Source/PRKeyboardComponent.h"/>
+            <FILE id="t9LXbH" name="PRNoteEditorComponent.cpp" compile="1" resource="0"
+                  file="Source/PRNoteEditorComponent.cpp"/>
+            <FILE id="Gci77i" name="PRNoteEditorComponent.h" compile="0" resource="0"
+                  file="Source/PRNoteEditorComponent.h"/>
+            <FILE id="jkuOId" name="PRNoteResizerComponent.cpp" compile="1" resource="0"
+                  file="Source/PRNoteResizerComponent.cpp"/>
+            <FILE id="sQWnRk" name="PRNoteResizerComponent.h" compile="0" resource="0"
+                  file="Source/PRNoteResizerComponent.h"/>
+            <FILE id="nTch6x" name="PRRulerComponent.cpp" compile="1" resource="0"
+                  file="Source/PRRulerComponent.cpp"/>
+            <FILE id="byHufM" name="PRRulerComponent.h" compile="0" resource="0"
+                  file="Source/PRRulerComponent.h"/>
+          </GROUP>
+          <GROUP id="{E0122BA3-EE1F-C5A4-9C0E-A289D783D02D}" name="ToolBarComponents">
+            <FILE id="DOC5W3" name="MidiChannelSelectorComponent.cpp" compile="1"
+                  resource="0" file="Source/MidiChannelSelectorComponent.cpp"/>
+            <FILE id="rwi1y0" name="MidiChannelSelectorComponent.h" compile="0"
+                  resource="0" file="Source/MidiChannelSelectorComponent.h"/>
+            <FILE id="uUd2TT" name="NoteTranspositionRuleSelectorComponent.cpp"
+                  compile="1" resource="0" file="Source/NoteTranspositionRuleSelectorComponent.cpp"/>
+            <FILE id="oZguj7" name="NoteTranspositionRuleSelectorComponent.h" compile="0"
+                  resource="0" file="Source/NoteTranspositionRuleSelectorComponent.h"/>
+            <FILE id="GyxVeR" name="SnapResolutionSelectorComponent.cpp" compile="1"
+                  resource="0" file="Source/SnapResolutionSelectorComponent.cpp"/>
+            <FILE id="LWSGRC" name="SnapResolutionSelectorComponent.h" compile="0"
+                  resource="0" file="Source/SnapResolutionSelectorComponent.h"/>
+            <FILE id="jzEcx8" name="PRToolBarComponent.cpp" compile="1" resource="0"
+                  file="Source/PRToolBarComponent.cpp"/>
+            <FILE id="onjnvn" name="PRToolBarComponent.h" compile="0" resource="0"
+                  file="Source/PRToolBarComponent.h"/>
+            <FILE id="Z9AeBn" name="BarsInViewSelectorComponent.cpp" compile="1"
+                  resource="0" file="Source/BarsInViewSelectorComponent.cpp"/>
+            <FILE id="pX57S6" name="BarsInViewSelectorComponent.h" compile="0"
+                  resource="0" file="Source/BarsInViewSelectorComponent.h"/>
+            <FILE id="W2BbC5" name="KeysInViewSelectorComponent.cpp" compile="1"
+                  resource="0" file="Source/KeysInViewSelectorComponent.cpp"/>
+            <FILE id="eEijR3" name="KeysInViewSelectorComponent.h" compile="0"
+                  resource="0" file="Source/KeysInViewSelectorComponent.h"/>
+          </GROUP>
+          <FILE id="ecbtaR" name="PianoRollWindow.cpp" compile="1" resource="0"
+                file="Source/PianoRollWindow.cpp"/>
+          <FILE id="XoFlHK" name="PianoRollWindow.h" compile="0" resource="0"
+                file="Source/PianoRollWindow.h"/>
+          <FILE id="S8aubV" name="PRMainComponent.cpp" compile="1" resource="0"
+                file="Source/PRMainComponent.cpp"/>
+          <FILE id="K92bco" name="PRMainComponent.h" compile="0" resource="0"
+                file="Source/PRMainComponent.h"/>
+        </GROUP>
         <GROUP id="{7E4E3A63-D395-0772-5492-5B7D370DA027}" name="ArrangementComponents">
+          <FILE id="jptv2o" name="SectionLengthDisplay.cpp" compile="1" resource="0"
+                file="Source/SectionLengthDisplay.cpp"/>
+          <FILE id="edCYbX" name="SectionLengthDisplay.h" compile="0" resource="0"
+                file="Source/SectionLengthDisplay.h"/>
+          <FILE id="jpZSI6" name="SectionLengthSelectorComponent.cpp" compile="1"
+                resource="0" file="Source/SectionLengthSelectorComponent.cpp"/>
+          <FILE id="NCCIz1" name="SectionLengthSelectorComponent.h" compile="0"
+                resource="0" file="Source/SectionLengthSelectorComponent.h"/>
           <FILE id="RPRAXY" name="ArrangementPatternComponent.cpp" compile="1"
                 resource="0" file="Source/ArrangementPatternComponent.cpp"/>
           <FILE id="udgiAp" name="ArrangementPatternComponent.h" compile="0"
@@ -178,17 +339,6 @@
               file="Source/StylerMainComponent.h"/>
         <FILE id="XfBh9u" name="StylerMainComponent.cpp" compile="1" resource="0"
               file="Source/StylerMainComponent.cpp"/>
-      </GROUP>
-      <GROUP id="{DBB64C67-AA12-FF26-85C0-956FF05620A0}" name="TracktionEngineCustomization">
-        <FILE id="OoNVnD" name="Utilities.h" compile="0" resource="0" file="Source/Utilities.h"/>
-        <FILE id="lfBFUc" name="StylerTracktionEngineBehaviour.h" compile="0"
-              resource="0" file="Source/StylerTracktionEngineBehaviour.h"/>
-        <FILE id="B44ppP" name="StylerTracktionEngineBehaviour.cpp" compile="1"
-              resource="0" file="Source/StylerTracktionEngineBehaviour.cpp"/>
-        <FILE id="IUzDQm" name="StylerUIBehaviour.h" compile="0" resource="0"
-              file="Source/StylerUIBehaviour.h"/>
-        <FILE id="wemMGM" name="StylerUIBehaviour.cpp" compile="1" resource="0"
-              file="Source/StylerUIBehaviour.cpp"/>
       </GROUP>
       <FILE id="uYUL7H" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
     </GROUP>

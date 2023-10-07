@@ -9,9 +9,56 @@
 */
 
 #include "MidiSequence.h"
-#include "ArrangerIDs.h"
 
 using namespace styler_app;
+
+namespace styler_app
+{
+    namespace
+    {
+        template <typename Type>
+        static void removeMidiEventFromSelection (Type* event)
+        {
+            //for (te::SelectionManager::Iterator sm; sm.next();)
+            //    if (auto sme = sm->getFirstItemOfType<SelectedMidiEvents>())
+            //        sme->removeSelectedEvent (event);
+        }
+
+        template<typename VarType>
+        inline void convertPropertyToType (juce::ValueTree& valueTree
+                                         , const juce::Identifier& identifier)
+        {
+            if (const auto* prop = valueTree.getPropertyPointer (identifier))
+            {
+                if (prop->isString())
+                {
+                    (*const_cast<juce::var*> (prop)) = static_cast<VarType> (*prop);
+                }
+            }
+        }
+    }
+}
+
+template<>
+class MidiSequence::EventDelegate<MidiNote>
+{
+public:
+    static bool isSuitableType (const juce::ValueTree& valueTree)
+    {
+        return valueTree.hasType (ArrangerIDs::note);
+    }
+
+    static bool updateObject (MidiNote& note, const juce::Identifier& identifier)
+    {
+        note.updatePropertiesFromState();
+        return identifier == ArrangerIDs::startBeat;
+    }
+
+    static void removeFromSelection (MidiNote* note)
+    {
+        removeMidiEventFromSelection (note);
+    }
+};
 
 MidiSequence::MidiSequence (const juce::ValueTree& valueTree
                           , juce::UndoManager* undoManager)
@@ -33,14 +80,8 @@ MidiSequence::MidiSequence (const juce::ValueTree& valueTree
     mMidiChannel.referTo  (mState, ArrangerIDs::channelIndex, undoManager);
 
     mNoteList = std::make_unique<EventList<MidiNote>> (mState);
-
-    //startTimer (sTimerPeriodInMilliseconds);
 }
 
-MidiSequence::~MidiSequence()
-{
-    //stopTimer();
-}
 
 juce::ValueTree MidiSequence::createMidiSequence (te::MidiChannel midiChannel)
 {
@@ -54,7 +95,7 @@ const juce::Array<MidiNote*>& MidiSequence::getNotes() const
     return mNoteList->getSortedList();
 }
 
-te::MidiChannel MidiSequence::getMidiChannel() const noexcept
+te::MidiChannel MidiSequence::getMidiChannel() const
 {
     return mMidiChannel;
 }
@@ -64,35 +105,26 @@ void MidiSequence::setMidiChannel (te::MidiChannel newMidiChannel)
     mMidiChannel = newMidiChannel;
 }
 
-void MidiSequence::generateAndCacheForAudioThread()
+void MidiSequence::addNote (double startBeat
+                          , double lengthInBeats
+                          , int noteIndex
+                          , int velocity
+                          , bool isMute
+                          , NoteTranspositionRule::Type transpositionRuleType
+                          , juce::UndoManager* undoManager)
 {
-    auto copyOfThis { std::make_shared<MidiSequence> (mState, nullptr) };
-    mGarbagePool.addSharedInstance (copyOfThis);
-    mAtomicSharedForAudioThread.exchange (copyOfThis);
+    auto valueTree {MidiNote::createNoteValueTree (startBeat
+                                                 , lengthInBeats
+                                                 , noteIndex
+                                                 , velocity
+                                                 , isMute
+                                                 , transpositionRuleType)};
+    mState.addChild (valueTree, -1, undoManager);
 }
 
-/*void MidiSequence::timerCallback()
+void MidiSequence::removeNote (MidiNote& note, juce::UndoManager* um)
 {
-    generateAndCacheForAudioThread();
-    mGarbagePool.cleanUp();
-}*/
+    mState.removeChild (note.state, um);
+}
 
-template<>
-struct MidiSequence::EventDelegate<MidiNote>
-{
-    static bool isSuitableType (const juce::ValueTree& valueTree)
-    {
-        return valueTree.hasType (ArrangerIDs::note);
-    }
 
-    static bool updateObject (MidiNote& note, const juce::Identifier& identifier)
-    {
-        note.updatePropertiesFromState();
-        return identifier == ArrangerIDs::startBeat;
-    }
-
-    static void removeFromSelection (MidiNote* note)
-    {
-        removeMidiEventFromSelection (note);
-    }
-};

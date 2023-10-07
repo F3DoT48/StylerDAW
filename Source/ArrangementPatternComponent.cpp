@@ -10,13 +10,19 @@
 
 #include <JuceHeader.h>
 #include "ArrangementPatternComponent.h"
+#include "PRMainComponent.h"
 
-//==============================================================================
-ArrangementPatternComponent::ArrangementPatternComponent()
+using namespace styler_app;
+
+ArrangementPatternComponent::ArrangementPatternComponent (ArrangementPattern::Ptr pattern, ArrangementSection::Ptr section)
+    : mArrangementPattern { pattern }
+    , mArrangementSection { section }
+    , mOpenPianoRollButton { "Open Piano Roll" }
+    , mPianoRollWindow { new PianoRollWindow ("Piano Roll") }
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
+    setupPianoRollButton();
 
+    addAndMakeVisible (mOpenPianoRollButton);
 }
 
 ArrangementPatternComponent::~ArrangementPatternComponent()
@@ -25,13 +31,6 @@ ArrangementPatternComponent::~ArrangementPatternComponent()
 
 void ArrangementPatternComponent::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
-
-       You should replace everything in this method with your own
-       drawing code..
-    */
-
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
 
     g.setColour (juce::Colours::grey);
@@ -39,13 +38,46 @@ void ArrangementPatternComponent::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
-    g.drawText ("ArrangementPatternComponent", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
+
+    juce::String componentText { "ArrangementPatternComponent" };
+    /*componentText.append (" ", 1);
+    componentText.append (mArrangementPattern->getAssociatedArrangementSection()->getName(), 64);
+    componentText.append (" ", 1);
+    componentText.append (mArrangementPattern->getAssociatedAudioTrack()->getName(), 64);*/
+
+    const int numLines {3};
+
+    g.drawFittedText (componentText
+                    , getLocalBounds()
+                    , juce::Justification::centred
+                    , numLines);
 }
 
 void ArrangementPatternComponent::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
+    auto rec { getLocalBounds() };
+    mOpenPianoRollButton.setBounds (rec.removeFromTop (sOpenPianoRollButtonHeigthInPixels));
+}
 
+void ArrangementPatternComponent::setupPianoRollButton()
+{
+    mOpenPianoRollButton.onClick = [this]()
+    {
+        if (mPianoRollWindow->getContentComponent() == nullptr)
+        {
+            auto* pianoRollMainComponent {new PRMainComponent (mArrangementPattern, mArrangementSection)};
+            pianoRollMainComponent->setSize (PRMainComponent::sDefaultWidthInPixels
+                                           , PRMainComponent::sDefaultHeightInPixels);
+
+            mPianoRollWindow->setContentOwned (pianoRollMainComponent, true);
+            mPianoRollWindow->centreWithSize (800, 600);
+            /*mPianoRollWindow->setName (juce::String (mArrangementSection->getName()
+                                                   + " "
+                                                   + mArrangementPattern->getAssociatedAudioTrack()->getName()
+                                                   + " Piano Roll"));*/
+        }
+
+        mPianoRollWindow->setVisible (true);
+        mPianoRollWindow->toFront (true);
+    };
 }

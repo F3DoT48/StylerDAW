@@ -15,7 +15,8 @@
 
 namespace styler_app
 {
-    class ArrangementSection : public juce::ReferenceCountedObject
+    class ArrangementSection : public te::EditItem
+                             , public juce::ReferenceCountedObject
                              , private juce::ValueTree::Listener
     {
     public:
@@ -28,12 +29,15 @@ namespace styler_app
 
         static juce::ValueTree createSection (const te::Edit&);
 
-        ArrangementPatternList& getAllPatterns() noexcept;
+        ArrangementPatternList& getAllPatterns();
+
+        juce::String getName() const override;
+        void setName (const juce::String&);
 
         static constexpr int sMaxLengthInBars { 16 };
         static constexpr int sMinLengthInBars { 1 };
 
-        int getLengthInBars() const noexcept;
+        int getLengthInBars() const;
         void setLengthInBars (int newLengthInBars, juce::UndoManager*);
 
         enum class PlaybackMode : int
@@ -44,7 +48,9 @@ namespace styler_app
           , ending = 3
         };
 
-        PlaybackMode getPlaybackMode() const noexcept;
+        static inline const juce::StringArray PlaybackModeNames { "loop", "fill", "intro", "ending" };
+
+        PlaybackMode getPlaybackMode() const;
         void setPlaybackMode (PlaybackMode newPlaybackMode, juce::UndoManager*);
 
         juce::ValueTree mState;
@@ -52,10 +58,11 @@ namespace styler_app
         juce::ValueTree& state { mState };
 
     private:
+        /* !!! for convenience */
         te::Edit& mEdit;
-        //int mSectionId;
 
-        int mLengthInBars;
+        juce::CachedValue<juce::String> mSectionName;
+        juce::CachedValue<int> mLengthInBars;
 
         PlaybackMode mPlaybackMode;
 

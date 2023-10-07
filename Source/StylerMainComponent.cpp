@@ -2,6 +2,8 @@
 #include "StylerTracktionEngineBehaviour.h"
 #include "StylerUIBehaviour.h"
 #include "SettingsComponent.h"
+#include "ArrangementControllerPlugin.h"
+#include "PatternPlayerPlugin.h"
 
 
 using namespace styler_app;
@@ -52,7 +54,19 @@ StylerMainComponent::StylerMainComponent()
     addAndMakeVisible (mArrangementControlsAreaViewport.get());
     addAndMakeVisible (mEditComponentViewport.get());
 
-    setSize (1024, 768);    
+    addAndMakeVisible (mKeyDispalyComponent.get());
+
+    addAndMakeVisible (mDetectedChordDisplayComponent.get());
+
+    addAndMakeVisible (mChordDetectorMidiInSelectorComponent.get());
+
+    addAndMakeVisible (mTempoDisplayComponent.get());
+
+    addAndMakeVisible (mTimeSignatureDisplayComponent.get());
+
+    addAndMakeVisible (mPlayStopButtonComponent.get());
+
+    setSize (1024, 768);
 }
 
 StylerMainComponent::~StylerMainComponent()
@@ -66,7 +80,6 @@ StylerMainComponent::~StylerMainComponent()
 //==============================================================================
 void StylerMainComponent::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
     g.setFont (juce::Font (16.0f));
@@ -117,8 +130,7 @@ void StylerMainComponent::resized()
 
         rectForEditComponent.setBottom (rectForEditComponent.getY()
                                       + (mEdit->getTrackList().size() - 3) // 2 te + 1 audio track are hidden
-                                      * (TrackComponentAttributes::minimumHeightInPixels 
-                                       + TrackComponentAttributes::trackGapInPixels));
+                                      * (TrackComponentAttributes::minimumHeightInPixels));
         
         rectForEditComponent.setRight (rectForEditComponent.getRight()
                                      - juce::LookAndFeel::getDefaultLookAndFeel().getDefaultScrollbarWidth());
@@ -127,8 +139,15 @@ void StylerMainComponent::resized()
     }
 
     mEditComponentViewport->setBounds (rectangle.removeFromTop (7 // tracks
-                                                              * (TrackComponentAttributes::minimumHeightInPixels
-                                                               + TrackComponentAttributes::trackGapInPixels)));
+                                                              * (TrackComponentAttributes::minimumHeightInPixels)));
+
+    auto recForArrangementControls { rectangle.removeFromTop (50)};
+    mKeyDispalyComponent->setBounds (recForArrangementControls.removeFromLeft (200));
+    mDetectedChordDisplayComponent->setBounds (recForArrangementControls.removeFromLeft (200));
+    mChordDetectorMidiInSelectorComponent->setBounds (recForArrangementControls.removeFromLeft (200));
+    mTempoDisplayComponent->setBounds (recForArrangementControls.removeFromLeft (75));
+    mTimeSignatureDisplayComponent->setBounds (recForArrangementControls.removeFromLeft (75));
+    mPlayStopButtonComponent->setBounds (recForArrangementControls.removeFromLeft (100));
 }
 
 juce::ApplicationCommandTarget* styler_app::StylerMainComponent::getNextCommandTarget()
@@ -284,31 +303,75 @@ void StylerMainComponent::createOrLoadEdit (juce::File editFile = {})
     mSelectionManager.deselectAll();
     mEditComponent = nullptr;
 
+    mTracktionEngine.getPluginManager().createBuiltInType<ArrangementControllerPlugin>();
+    mTracktionEngine.getPluginManager().createBuiltInType<PatternPlayerPlugin>();
+
     if (editFile.existsAsFile())
     {
         mEdit = te::loadEditFromFile (mTracktionEngine, editFile);
         mArrangement = std::make_unique<Arrangement>(*mEdit);
+        auto controllerPlugin = dynamic_cast<ArrangementControllerPlugin*> (te::getFirstAudioTrack (*mEdit)->pluginList[0]);
+        controllerPlugin->setArrangementController (mArrangement->getPtrToController());
+
+        auto audioTracks { getAudioTracks(*mEdit) };
+        for (auto audioTrack : audioTracks)
+        {
+            if (audioTrack == audioTracks.getFirst())
+            {
+                continue;
+            }
+            else
+            {
+                auto patternPlayerPlugin = dynamic_cast<PatternPlayerPlugin*> (audioTrack->pluginList[0]);
+                patternPlayerPlugin->setArrangementController (mArrangement->getPtrToController());
+            }
+        }
     }
     else
     {
         mEdit = te::createEmptyEdit (mTracktionEngine, editFile);
         mEdit->ensureNumberOfAudioTracks (2); // 1 hidden and 1 displayed tracks
 
-        // add racks to audio  tracks
+        auto arrangementState { Arrangement::createArrangement (*mEdit) };
+        mEdit->state.appendChild (arrangementState, nullptr);
+        mArrangement = std::make_unique<Arrangement> (*mEdit);
+
+        // add plugins to audio tracks
         auto audioTracks { getAudioTracks(*mEdit) };
         
         for (auto audioTrack : audioTracks)
         {
-            auto rackTypePtr { mEdit->getRackList().addNewRack() };
-            auto rackInstanceCreationInfo { te::RackInstance::create (*rackTypePtr) };
-            auto rackFx { dynamic_cast<te::RackInstance*> (mEdit->getPluginCache().createNewPlugin (rackInstanceCreationInfo).get()) };
-            audioTrack->pluginList.insertPlugin (*rackFx, 0, &mSelectionManager);
-        }
+            if (audioTrack == audioTracks.getFirst()) 
+            { 
+                auto controllerPluginOfBaseType = mEdit->getPluginCache().createNewPlugin ("ArrangementControllerPlugin", {});
+                auto controllerPlugin = dynamic_cast<ArrangementControllerPlugin*> (controllerPluginOfBaseType.get());
+                controllerPlugin->setArrangementController (mArrangement->getPtrToController());
+                audioTrack->pluginList.insertPlugin (controllerPluginOfBaseType, 0, &mSelectionManager);
+            }
+            else
+            {
+                auto patternPlayerPluginOfBaseType = mEdit->getPluginCache().createNewPlugin ("PatternPlayerPlugin", {});
+                auto patternPlayerPlugin = dynamic_cast<PatternPlayerPlugin*> (patternPlayerPluginOfBaseType.get());
+                patternPlayerPlugin->setArrangementController (mArrangement->getPtrToController());
+                audioTrack->pluginList.insertPlugin (*patternPlayerPlugin, 0, &mSelectionManager);
 
-        //mArrangement = Arrangement::createArrangementForNewEditAndAddToState (*mEdit);
-        auto arrangementState { Arrangement::createArrangement (*mEdit) };
-        mEdit->state.appendChild (arrangementState, nullptr);
-        mArrangement = std::make_unique<Arrangement> (*mEdit);
+                auto rackTypePtr { mEdit->getRackList().addNewRack() };
+                auto rackInstanceCreationInfo { te::RackInstance::create (*rackTypePtr) };
+                auto rackPlugin { dynamic_cast<te::RackInstance*> (mEdit->getPluginCache().createNewPlugin (rackInstanceCreationInfo).get()) };
+                audioTrack->pluginList.insertPlugin (*rackPlugin, 1, &mSelectionManager);
+            }
+        }
+    }
+
+    mArrangementForAudioThreadGenerator = std::make_unique<ArrangementForAudioThreadGenerator> (*mArrangement);
+
+    auto audioTracks { getAudioTracks(*mEdit) };
+
+    for (int index {1}; index < audioTracks.size(); ++index)
+    {
+        auto patternPlayerPlugin = dynamic_cast<PatternPlayerPlugin*> (audioTracks[index]->pluginList[0]);
+        patternPlayerPlugin->setArrangementForAudioThreadGenerator (mArrangementForAudioThreadGenerator.get());
+        patternPlayerPlugin->setOwnerTrackIndex (index);
     }
 
     mEdit->playInStopEnabled = true;
@@ -328,6 +391,18 @@ void StylerMainComponent::createOrLoadEdit (juce::File editFile = {})
     mEditComponentViewport->setViewedComponent (mEditComponent.get(), false);
 
     setTopLevelComponentName();
+
+    mKeyDispalyComponent = std::make_unique<KeyDisplayComponent> (*mArrangement);
+    
+    mDetectedChordDisplayComponent = std::make_unique<DetectedChordDisplayComponent> (*mArrangement);
+
+    mChordDetectorMidiInSelectorComponent = std::make_unique<ChordDetectorMidiInSelectorComponent> (*mEdit);
+
+    mTempoDisplayComponent = std::make_unique<TempoDisplayComponent> (mEdit->tempoSequence);
+
+    mTimeSignatureDisplayComponent = std::make_unique<TimeSignatureDisplayComponent> (mEdit->tempoSequence);
+
+    mPlayStopButtonComponent = std::make_unique<PlayStopButtonComponent> (*mEdit);
 }
 
 void StylerMainComponent::enableAllInputs()
@@ -388,16 +463,26 @@ void StylerMainComponent::setupNewTrackButton()
 {
     mNewTrackButton->onClick = [this]
     {
-        auto audioTracks {getAudioTracks(*mEdit)};
-        const int numGlobalTracks { 5 };
-        if (audioTracks.size() < mEdit->engine.getEngineBehaviour().getEditLimits().maxNumTracks - numGlobalTracks)
+        auto audioTracks { getAudioTracks(*mEdit) };
+        const int numPermanentTracks { 5 + 1 }; // see  StylerTracktionEngineBehaviour.cpp 
+        if (audioTracks.size() < mEdit->engine.getEngineBehaviour().getEditLimits().maxNumTracks - numPermanentTracks)
         {
             mEdit->ensureNumberOfAudioTracks (audioTracks.size() + 1);
-            auto addedTrack { mEdit->getTrackList()[mEdit->getTrackList().size() - 1] };
+            auto audioTracksAfterAdd { getAudioTracks(*mEdit) };
+            int addedTrackIndex { audioTracksAfterAdd.size() - 1 };
+            auto addedTrack { audioTracksAfterAdd[addedTrackIndex] };
+
+            auto patternPlayerPluginOfBaseType = mEdit->getPluginCache().createNewPlugin ("PatternPlayerPlugin", {});
+            auto patternPlayerPlugin = dynamic_cast<PatternPlayerPlugin*> (patternPlayerPluginOfBaseType.get());
+            patternPlayerPlugin->setArrangementController (mArrangement->getPtrToController());
+            patternPlayerPlugin->setArrangementForAudioThreadGenerator (mArrangementForAudioThreadGenerator.get());
+            patternPlayerPlugin->setOwnerTrackIndex (addedTrackIndex);
+            addedTrack->pluginList.insertPlugin (*patternPlayerPlugin, 0, &mSelectionManager);
+
             auto rackTypePtr { mEdit->getRackList().addNewRack() };
             auto rackInstanceCreationInfo { te::RackInstance::create (*rackTypePtr) };
-            auto rackFx { dynamic_cast<te::RackInstance*> (mEdit->getPluginCache().createNewPlugin(rackInstanceCreationInfo).get()) };
-            addedTrack->pluginList.insertPlugin (*rackFx, 0, &mSelectionManager);
+            auto rackPlugin { dynamic_cast<te::RackInstance*> (mEdit->getPluginCache().createNewPlugin (rackInstanceCreationInfo).get()) };
+            addedTrack->pluginList.insertPlugin (*rackPlugin, 1, &mSelectionManager);
         }
     };
 }

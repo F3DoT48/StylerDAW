@@ -6,6 +6,13 @@
 #include "MainComponentMenuBar.h"
 #include "Arrangement.h"
 #include "ArrangementControlsArea.h"
+#include "KeyDisplayComponent.h"
+#include "ChordDetectorMidiInSelectorComponent.h"
+#include "TempoDisplayComponent.h"
+#include "TimeSignatureDisplayComponent.h"
+#include "DetectedChordDisplayComponent.h"
+#include "ArrangementForAudioThreadGenerator.h"
+#include "PlayStopButtonComponent.h"
 
 namespace te = tracktion_engine;
 
@@ -45,6 +52,7 @@ namespace styler_app
         juce::ApplicationCommandManager mCommandManager;
         std::unique_ptr<MainComponentMenuBar> mMenuBar;
         std::unique_ptr<Arrangement> mArrangement;
+        std::unique_ptr<ArrangementForAudioThreadGenerator> mArrangementForAudioThreadGenerator;
 
         std::unique_ptr<juce::TextButton> mNewTrackButton;
         std::unique_ptr<juce::TextButton> mNewArrangementSectionButton;
@@ -54,6 +62,12 @@ namespace styler_app
 
         std::unique_ptr<EditComponent> mEditComponent;
         std::unique_ptr<juce::Viewport> mEditComponentViewport;
+        std::unique_ptr<KeyDisplayComponent> mKeyDispalyComponent;
+        std::unique_ptr<DetectedChordDisplayComponent> mDetectedChordDisplayComponent;
+        std::unique_ptr<ChordDetectorMidiInSelectorComponent> mChordDetectorMidiInSelectorComponent;
+        std::unique_ptr<TempoDisplayComponent> mTempoDisplayComponent;
+        std::unique_ptr<TimeSignatureDisplayComponent> mTimeSignatureDisplayComponent;
+        std::unique_ptr<PlayStopButtonComponent> mPlayStopButtonComponent;
 
         void changeListenerCallback (juce::ChangeBroadcaster*) override;
 

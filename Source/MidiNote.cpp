@@ -28,31 +28,35 @@ void MidiNote::updatePropertiesFromState()
     mNoteIndex = static_cast<uint8_t> (juce::jlimit (0, 127, static_cast<int> (mState.getProperty (ArrangerIDs::noteIndex))));
     mVelocity = static_cast<uint8_t> (juce::jlimit (0, 127, static_cast<int> (mState.getProperty (ArrangerIDs::velocity))));
     mIsMute = mState.getProperty (ArrangerIDs::isMute) ? 1 : 0;
-    switch (static_cast<NoteTranspositionRule::Type> (static_cast<int> (mState.getProperty (ArrangerIDs::transpositionRule))))
-    {
-        case NoteTranspositionRule::Type::ignore:
-            mTranspositionRule = ArrangerEngine::sNoteIgnoreTranspositionRule;
-            break;
-        case NoteTranspositionRule::Type::retriggerWithNewPitch:
-            mTranspositionRule = ArrangerEngine::sNoteRetriggerWithNewPitchRule;
-            break;
-        default:
-            jassert ("Unknown note transposition rule");
-            break;
-    }
+    mTranspositionRuleType = static_cast<NoteTranspositionRule::Type> (static_cast<int> (mState.getProperty (ArrangerIDs::transpositionRuleType)));
 }
 
-juce::ValueTree MidiNote::createNote (const MidiNote& midiNote)
+juce::ValueTree MidiNote::getValueTreeFromNote (const MidiNote& midiNote)
 {
     juce::ValueTree valueTree { midiNote.mState.createCopy() };
 
     return valueTree;
 }
 
+juce::ValueTree MidiNote::createNoteValueTree (double startBeat
+                                             , double lengthInBeats
+                                             , int noteIndex
+                                             , int velocity
+                                             , bool isMute
+                                             , NoteTranspositionRule::Type transpositionRuleType)
+{
+    return te::createValueTree (ArrangerIDs::note
+                              , ArrangerIDs::noteIndex, noteIndex
+                              , ArrangerIDs::startBeat, startBeat
+                              , ArrangerIDs::lengthInBeats, std::max (0.0, lengthInBeats)
+                              , ArrangerIDs::velocity, velocity
+                              , ArrangerIDs::isMute, isMute ? 1 : 0
+                              , ArrangerIDs::transpositionRuleType, static_cast<int> (transpositionRuleType));
+}
+
 void MidiNote::setStartBeat (double newStartBeat, juce::UndoManager* undoManager)
 {
     newStartBeat = std::max (0.0, newStartBeat);
-
     if (mStartBeat != newStartBeat)
     {
         mState.setProperty (ArrangerIDs::startBeat, newStartBeat, undoManager);
@@ -60,7 +64,7 @@ void MidiNote::setStartBeat (double newStartBeat, juce::UndoManager* undoManager
     }
 }
 
-double MidiNote::getStartBeat() const noexcept
+double MidiNote::getStartBeat() const
 {
     return mStartBeat;
 }
@@ -79,7 +83,7 @@ void MidiNote::setLengthInBeats (double newLengthInBeats, juce::UndoManager* und
     }
 }
 
-double MidiNote::getLengthInBeats() const noexcept
+double MidiNote::getLengthInBeats() const
 {
     return mLengthInBeats;
 }
@@ -95,7 +99,7 @@ void MidiNote::setNoteIndex (int newNoteIndex, juce::UndoManager* undoManager)
     }
 }
 
-int MidiNote::getNoteIndex() const noexcept
+int MidiNote::getNoteIndex() const
 {
     return static_cast<int> (mNoteIndex);
 }
@@ -110,7 +114,7 @@ void MidiNote::setVelocity(int newVelocity, juce::UndoManager* undoManager)
     }
 }
 
-int MidiNote::getVelocity() const noexcept
+int MidiNote::getVelocity() const
 {
     return static_cast<int> (mVelocity);
 }
@@ -124,24 +128,21 @@ void MidiNote::setMute (bool shouldMute, juce::UndoManager* undoManager)
     }
 }
 
-bool MidiNote::isMute() const noexcept
+bool MidiNote::isMute() const
 {
     return mIsMute != 0;
 }
-/*
-static juce::ValueTree createNoteValueTree (int noteIndex
-                                          , double startBeat
-                                          , double lengthInBeats
-                                          , int velocity
-                                          , bool isMute
-                                          , NoteTranspositionRule::Type transpositionRule)
+
+void MidiNote::setTranspositionType (NoteTranspositionRule::Type newTranspositionRuleType, juce::UndoManager* undoManager)
 {
-    return te::createValueTree (ArrangerIDs::note
-                              , ArrangerIDs::noteIndex, noteIndex
-                              , ArrangerIDs::startBeat, startBeat
-                              , ArrangerIDs::lengthInBeats, std::max (0.0, lengthInBeats)
-                              , ArrangerIDs::velocity, velocity
-                              , ArrangerIDs::isMute, isMute ? 1 : 0
-                              , ArrangerIDs::transpositionRule, static_cast<int> (transpositionRule));
+    if (getTranspositionType() != newTranspositionRuleType)
+    {
+        mState.setProperty (ArrangerIDs::transpositionRuleType, static_cast<int> (newTranspositionRuleType), undoManager);
+        mTranspositionRuleType = newTranspositionRuleType;
+    }
 }
-*/
+
+NoteTranspositionRule::Type MidiNote::getTranspositionType() const
+{
+    return mTranspositionRuleType;
+}

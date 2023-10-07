@@ -18,63 +18,57 @@ using namespace styler_app;
 //==============================================================================
 PluginsAreaAudioTrackComponent::PluginsAreaAudioTrackComponent (EditViewState& editViewState, te::Track::Ptr track)
     : TrackComponent {editViewState, track}
-    , mPluginsRackButton {"Open Pugins Rack"}
+    , mPluginsRackButton {"Open Plugins Rack"}
     , mPluginsRackWindow {new PluginsRackWindow (juce::String (track->getName()) += " Plugins Rack")}
 {
     mPluginsRackButton.onClick = [this]()
     {
-        /*juce::DialogWindow::LaunchOptions pluginsRackWindowLaunchOptions;
-        pluginsRackWindowLaunchOptions.dialogTitle = "Plugins Rack";
-        pluginsRackWindowLaunchOptions.dialogBackgroundColour = getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId);
-        pluginsRackWindowLaunchOptions.escapeKeyTriggersCloseButton = false;
-        pluginsRackWindowLaunchOptions.resizable = false;
-        pluginsRackWindowLaunchOptions.useBottomRightCornerResizer = true;*/
-
-        auto rack { dynamic_cast<te::RackInstance*> (mTrack->pluginList[0]) };
-
-        auto pluginsRackComponent { new PluginsRackComponent (rack) };
-        
-        int pluginRackComponentWidth { PluginsRackComponent::sViewportWidth };
-        int pluginRackComponentHeight { PluginsRackComponent::sViewportHeight };
-
-        for (const auto plugin : rack->type->getPlugins())
+        if (mPluginsRackWindow->getContentComponent() == nullptr)
         {
-            juce::StringArray ins, outs;
-            plugin->getChannelNames (&ins, &outs);
-            const auto pluginPosition { rack->type->getPluginPosition (plugin) };
-            const int maxNumPins { juce::jmax (ins.size()
-                                             , outs.size()) };
+            auto rack { dynamic_cast<te::RackInstance*> (mTrack->pluginList[1]) };
 
-            const int pluginBottom { PluginInRackComponent::sMinHeightInPixels
-                                   + maxNumPins * PinComponent::sHeightInPixels
-                                   + (maxNumPins - 1) * PluginInRackComponent::sGapBtwPins };
+            auto pluginsRackComponent { new PluginsRackComponent (rack) };
+        
+            int pluginRackComponentWidth { PluginsRackComponent::sViewportWidth };
+            int pluginRackComponentHeight { PluginsRackComponent::sViewportHeight };
 
-            const int newHeight { static_cast<int> (pluginPosition.getY() * pluginRackComponentHeight)
-                                + pluginBottom };
+            for (const auto plugin : rack->type->getPlugins())
+            {
+                juce::StringArray ins, outs;
+                plugin->getChannelNames (&ins, &outs);
+                const auto pluginPosition { rack->type->getPluginPosition (plugin) };
+                const int maxNumPins { juce::jmax (ins.size()
+                                                 , outs.size()) };
 
-            pluginRackComponentHeight = juce::jmax (pluginRackComponentHeight
-                                                  , newHeight);
+                const int pluginBottom { PluginInRackComponent::sMinHeightInPixels
+                                       + maxNumPins * PinComponent::sHeightInPixels
+                                       + (maxNumPins - 1) * PluginInRackComponent::sGapBtwPins };
 
-            const int newWidth { static_cast<int> (pluginPosition.getX() * pluginRackComponentWidth)
-                               + PluginInRackComponent::sWidthInPixels };
+                const int newHeight { static_cast<int> (pluginPosition.getY() * pluginRackComponentHeight)
+                                    + pluginBottom };
 
-            pluginRackComponentWidth = juce::jmax (pluginRackComponentWidth
-                                                 , newWidth);
+                pluginRackComponentHeight = juce::jmax (pluginRackComponentHeight
+                                                      , newHeight);
+
+                const int newWidth { static_cast<int> (pluginPosition.getX() * pluginRackComponentWidth)
+                                   + PluginInRackComponent::sWidthInPixels };
+
+                pluginRackComponentWidth = juce::jmax (pluginRackComponentWidth
+                                                     , newWidth);
+            }
+
+            pluginsRackComponent->setSize (pluginRackComponentWidth, pluginRackComponentHeight);
+
+            auto pluginsRackComponentViewport {new juce::Viewport ("PluginsRackComponentViewport") };
+            pluginsRackComponentViewport->setViewedComponent (pluginsRackComponent);
+            pluginsRackComponentViewport->setBounds (0, 0, PluginsRackComponent::sViewportWidth, PluginsRackComponent::sViewportHeight);
+            mPluginsRackWindow->setContentOwned (pluginsRackComponentViewport, true);
         }
 
-        pluginsRackComponent->setSize (pluginRackComponentWidth, pluginRackComponentHeight);
 
-        auto pluginsRackComponentViewport {new juce::Viewport ("PluginsRackComponentViewport") };
-        pluginsRackComponentViewport->setViewedComponent (pluginsRackComponent);
-        pluginsRackComponentViewport->setBounds (0, 0, PluginsRackComponent::sViewportWidth, PluginsRackComponent::sViewportHeight);
-
-        //pluginsRackWindowLaunchOptions.content.setOwned (pluginsRackComponentViewport);
-        //pluginsRackWindowLaunchOptions.launchAsync();
-        
-        //auto pluginsRackWindow { new PluginsRackWindow (mTrack->getName()) };
-        mPluginsRackWindow->setContentOwned (pluginsRackComponentViewport, true);
         mPluginsRackWindow->centreWithSize (mPluginsRackWindow->getWidth(), mPluginsRackWindow->getHeight());
         mPluginsRackWindow->setVisible (true);
+        mPluginsRackWindow->toFront (true);
     };
 
     addAndMakeVisible (mPluginsRackButton);

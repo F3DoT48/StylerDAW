@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "Arrangement.h"
 #include "ArrangementSection.h"
+#include "SectionLengthDisplay.h"
 
 namespace styler_app
 {
@@ -32,7 +33,10 @@ namespace styler_app
         Arrangement& mArrangement;
         ArrangementSection::Ptr mArrangementSection;
 
+        juce::Label mNameLabel;
         juce::TextButton mDeleteSectionButton;
+        juce::ComboBox mTypeSelectorBox;
+        SectionLengthDisplay mLengthDisplay;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArrangementSectionControlsComponent)
     };

@@ -70,14 +70,11 @@ void EditComponent::resized()
 
     for (int trackId{ 0 }; trackId < mInputsAreasPermanentTracks.size(); ++trackId)
     {
-        mInputsAreasPermanentTracks[trackId]->setBounds (recInputAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
-                                                                                    + TrackComponentAttributes::trackGapInPixels));
+        mInputsAreasPermanentTracks[trackId]->setBounds (recInputAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels));
 
-        mMixerControlsAreasPermanentTracks[trackId]->setBounds (recMixerControlsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
-                                                                                                   + TrackComponentAttributes::trackGapInPixels));
+        mMixerControlsAreasPermanentTracks[trackId]->setBounds (recMixerControlsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels));
 
-        mPluginsAreasPermanentTracks[trackId]->setBounds (recPluginsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
-                                                                                       + TrackComponentAttributes::trackGapInPixels));
+        mPluginsAreasPermanentTracks[trackId]->setBounds (recPluginsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels));
     }
 
     assert (mInputsAreasAudioTracks.size() == mPluginsAreasAudioTracks.size()
@@ -85,14 +82,11 @@ void EditComponent::resized()
 
     for (int trackId{ 0 }; trackId < mInputsAreasAudioTracks.size(); ++trackId)
     {
-        mInputsAreasAudioTracks[trackId]->setBounds (recInputAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
-                                                                                + TrackComponentAttributes::trackGapInPixels));
+        mInputsAreasAudioTracks[trackId]->setBounds (recInputAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels));
 
-        mMixerControlsAreasAudioTracks[trackId]->setBounds (recMixerControlsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
-                                                                                               + TrackComponentAttributes::trackGapInPixels));
+        mMixerControlsAreasAudioTracks[trackId]->setBounds (recMixerControlsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels));
 
-        mPluginsAreasAudioTracks[trackId]->setBounds (recPluginsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels
-                                                                                   + TrackComponentAttributes::trackGapInPixels));
+        mPluginsAreasAudioTracks[trackId]->setBounds (recPluginsAreas.removeFromTop (TrackComponentAttributes::minimumHeightInPixels));
     }
 
     for (auto inputsArea : mInputsAreasPermanentTracks)
@@ -125,21 +119,18 @@ void EditComponent::resized()
         mixerControlsArea->resized();
     }
 
-    auto rectForArrangmentSections { getLocalBounds() };
-    rectForArrangmentSections.setLeft (TrackComponentAttributes::inputsAreaWidthInPixels);
-    rectForArrangmentSections.setRight (getWidth()
-                                      - TrackComponentAttributes::mixerControlsParametersAreaWidthInPixels
-                                      - TrackComponentAttributes::pluginAreaWidthInPixels);
-    rectForArrangmentSections.setBottom (recPluginsAreas.getY());
+    auto rectForArrangementSections { getLocalBounds() };
+    rectForArrangementSections.setLeft (recInputAreas.getRight());
+    rectForArrangementSections.setRight (recPluginsAreas.getX());
+    rectForArrangementSections.setBottom (recPluginsAreas.getBottom());
 
-    mArrangementSectionsArea->setBounds (juce::Rectangle<int> (rectForArrangmentSections.getX()
-                                                             , rectForArrangmentSections.getY()
-                                                             , rectForArrangmentSections.getWidth()
-                                                             + (mArrangement.getAllSections().size()
-                                                              * ArrangementSectionComponent::sWidthInPixels)
-                                                             , rectForArrangmentSections.getHeight()));
+    mArrangementSectionsArea->setBounds (rectForArrangementSections.getX()
+                                       , rectForArrangementSections.getY()
+                                       , mArrangement.getAllSections().size()
+                                       * ArrangementSectionComponent::sWidthInPixels
+                                       , rectForArrangementSections.getHeight());
 
-    mSectionsAreaViewport->setBounds (rectForArrangmentSections);
+    mSectionsAreaViewport->setBounds (rectForArrangementSections);
 }
 
 EditViewState& EditComponent::getEditViewState()
@@ -252,6 +243,15 @@ void EditComponent::buildTracks()
     resized();
 }
 
+
+void EditComponent::valueTreePropertyChanged (juce::ValueTree& tree, const juce::Identifier& property)
+{
+    if (te::TrackList::isTrack (tree))
+    {
+        markAndUpdate (mUpdateTracks);
+    }
+}
+
 void EditComponent::valueTreeChildAdded (juce::ValueTree&, juce::ValueTree& child)
 {
     if (te::TrackList::isTrack (child))
@@ -259,7 +259,6 @@ void EditComponent::valueTreeChildAdded (juce::ValueTree&, juce::ValueTree& chil
         markAndUpdate (mUpdateTracks);
         auto rect { getBounds() };
         rect.setBottom (rect.getBottom() 
-                      + TrackComponentAttributes::trackGapInPixels
                       + TrackComponentAttributes::minimumHeightInPixels);
         setBounds (rect);
         findParentComponentOfClass<StylerMainComponent>()->getEditComponentViewport()->setViewPositionProportionately (0.0, 1.0);
@@ -274,7 +273,6 @@ void EditComponent::valueTreeChildRemoved (juce::ValueTree&, juce::ValueTree& ch
         markAndUpdate (mUpdateTracks);
         auto rect { getBounds() };
         rect.setBottom (rect.getBottom() 
-                      - TrackComponentAttributes::trackGapInPixels
                       - TrackComponentAttributes::minimumHeightInPixels);
         setBounds (rect);
     }
@@ -295,6 +293,5 @@ void EditComponent::changeListenerCallback (juce::ChangeBroadcaster*)
 
 void EditComponent::scrollBarMoved (juce::ScrollBar*, double newRangeStart)
 {
-    //mSectionsAreaViewport->setViewPosition (mArrangementControlsAreaViewport.getViewPosition());
     mSectionsAreaViewport->getHorizontalScrollBar().setCurrentRangeStart (newRangeStart);
 }

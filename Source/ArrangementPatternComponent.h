@@ -11,19 +11,33 @@
 #pragma once
 
 #include <JuceHeader.h>
+//#include "ArrangementPattern.h"
+#include "ArrangementSection.h"
+#include "PianoRollWindow.h"
 
-//==============================================================================
-/*
-*/
-class ArrangementPatternComponent  : public juce::Component
+namespace styler_app
 {
-public:
-    ArrangementPatternComponent();
-    ~ArrangementPatternComponent() override;
+    class ArrangementPatternComponent  : public juce::Component
+    {
+    public:
+        ArrangementPatternComponent() = delete;
+        ArrangementPatternComponent (ArrangementPattern::Ptr, ArrangementSection::Ptr);
+        ~ArrangementPatternComponent() override;
 
-    void paint (juce::Graphics&) override;
-    void resized() override;
+        void paint (juce::Graphics&) override;
+        void resized() override;
 
-private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArrangementPatternComponent)
-};
+        static constexpr int sOpenPianoRollButtonHeigthInPixels { 20 };
+
+    private:
+        ArrangementPattern::Ptr mArrangementPattern;
+        ArrangementSection::Ptr mArrangementSection;
+
+        juce::TextButton mOpenPianoRollButton;
+        std::unique_ptr<PianoRollWindow> mPianoRollWindow;
+
+        void setupPianoRollButton();
+
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArrangementPatternComponent)
+    };
+}

@@ -76,7 +76,7 @@ namespace styler_app
         bool mUpdateTracks;
 
         void valueTreeChanged() override {}
-        void valueTreePropertyChanged (juce::ValueTree&, const juce::Identifier&) override {}
+        void valueTreePropertyChanged (juce::ValueTree&, const juce::Identifier&) override;
         void valueTreeChildAdded (juce::ValueTree&, juce::ValueTree&) override;
         void valueTreeChildRemoved (juce::ValueTree&, juce::ValueTree&, int) override;
         void valueTreeChildOrderChanged (juce::ValueTree&, int, int) override {}

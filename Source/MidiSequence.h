@@ -12,85 +12,34 @@
 
 #include <JuceHeader.h>
 #include "MidiNote.h"
+#include "ArrangerIDs.h"
 
 namespace te = tracktion_engine;
 
 namespace styler_app
 {
-    namespace
-    {
-        template<typename VarType>
-        inline void convertPropertyToType (juce::ValueTree& valueTree
-                                         , const juce::Identifier& identifier)
-        {
-            if (const auto* prop = valueTree.getPropertyPointer (identifier))
-            {
-                if (prop->isString())
-                {
-                    (*const_cast<juce::var*> (prop)) = static_cast<VarType> (*prop);
-                }
-            }
-        }
-
-        template <typename Type>
-        static void removeMidiEventFromSelection (Type* event)
-        {
-            //for (te::SelectionManager::Iterator sm; sm.next();)
-            //    if (auto sme = sm->getFirstItemOfType<SelectedMidiEvents>())
-            //        sme->removeSelectedEvent (event);
-        }
-
-        template <typename Type>
-        class GarbagePoolOfSharedPtr
-        {
-        public:
-            GarbagePoolOfSharedPtr() = default;
-            ~GarbagePoolOfSharedPtr() = default;
-
-            void addSharedInstance (const std::shared_ptr<Type>& newSharedInsance)
-            {
-                TRACKTION_ASSERT_MESSAGE_THREAD
-
-                mList.push_back (newSharedInsance);
-            }
-
-            void cleanUp()
-            {
-                TRACKTION_ASSERT_MESSAGE_THREAD
-
-                auto toEraseIt 
-                {
-                    std::remove_if (mList.begin()
-                                  , mList.end()
-                                  , [] (const std::shared_ptr<Type>& elem)
-                                    {
-                                        return elem.use_count() == 1;
-                                    })
-                };
-
-                mList.erase (toEraseIt, mList.end());
-            }
-
-        private:
-            std::list<std::shared_ptr<Type>> mList;
-
-            JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GarbagePoolOfSharedPtr)
-        };
-    }
-
-    class MidiSequence //: private juce::Timer
+    class MidiSequence
     {
     public:
         MidiSequence() = delete;
         MidiSequence (const juce::ValueTree&, juce::UndoManager*);
-        ~MidiSequence();
 
         static juce::ValueTree createMidiSequence (te::MidiChannel midiChannel);
 
         const juce::Array<MidiNote*>& getNotes() const;
 
-        te::MidiChannel getMidiChannel() const noexcept;
+        te::MidiChannel getMidiChannel() const;
         void setMidiChannel (te::MidiChannel newMidiChannel);
+
+        void addNote (double startBeat
+                    , double lengthInBeats
+                    , int noteIndex
+                    , int velocity
+                    , bool isMute
+                    , NoteTranspositionRule::Type transpositionRuleType
+                    , juce::UndoManager* undoManager);
+
+        void removeNote (MidiNote& note, juce::UndoManager* um);
 
         template <typename Type>
         static void sortMidiEventsByTime (juce::Array<Type>& events)
@@ -102,8 +51,6 @@ namespace styler_app
                 return a->getStartBeat() < b->getStartBeat();
             });
         }
-
-        void generateAndCacheForAudioThread();
 
         juce::ValueTree mState;
 
@@ -128,6 +75,7 @@ namespace styler_app
         public:
             EventList (const juce::ValueTree& valueTree)
               : te::ValueTreeObjectList<EventType> (valueTree)
+              , mNeedsSorting { true }
             {
                 te::ValueTreeObjectList<EventType>::rebuildObjects();
             }
@@ -152,7 +100,7 @@ namespace styler_app
 
             bool isSuitableType (const juce::ValueTree& valueTree) const override
             {
-                return EventDelegate<EventType>::isSuitableType (valueTree);
+                return MidiSequence::EventDelegate<EventType>::isSuitableType (valueTree);
             }
 
             EventType* createNewObject (const juce::ValueTree& valueTree) override
@@ -172,7 +120,7 @@ namespace styler_app
 
             void objectRemoved (EventType* event) override
             {
-                EventDelegate<EventType>::removeFromSelection (event);
+                MidiSequence::EventDelegate<EventType>::removeFromSelection (event);
                 triggerSort();
             }
 
@@ -182,11 +130,11 @@ namespace styler_app
             }
 
             void valueTreePropertyChanged (juce::ValueTree& valueTree
-                                        , const juce::Identifier& identifier) override
+                                         , const juce::Identifier& identifier) override
             {
                 if (auto event = getEventFor (valueTree))
                 {
-                    if (EventDelegate<EventType>::updateObject (*event, identifier))
+                    if (MidiSequence::EventDelegate<EventType>::updateObject (*event, identifier))
                     {
                         triggerSort();
                     }
@@ -201,7 +149,7 @@ namespace styler_app
 
             const juce::Array<EventType*>& getSortedList()
             {
-                TRACKTION_ASSERT_MESSAGE_THREAD
+                //TRACKTION_ASSERT_MESSAGE_THREAD
 
                 const juce::ScopedLock lock (mCriticalSection);
 
@@ -226,12 +174,7 @@ namespace styler_app
 
         static constexpr int sTimerPeriodInMilliseconds { 100 };
 
-        std::unique_ptr<EventList<MidiNote>> mNoteList;
-
-        GarbagePoolOfSharedPtr<MidiSequence> mGarbagePool;
-        std::atomic<std::shared_ptr<MidiSequence>> mAtomicSharedForAudioThread; // perhaps <MidiMessageSequence> directly?
-
-        //void timerCallback() override;
+        std::unique_ptr<MidiSequence::EventList<MidiNote>> mNoteList;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MidiSequence)
     };

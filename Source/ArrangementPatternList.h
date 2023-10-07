@@ -20,7 +20,10 @@ namespace styler_app
     {
     public:
         ArrangementPatternList() = delete;
-        ArrangementPatternList (te::Edit&, const juce::ValueTree&, juce::UndoManager*);
+        ArrangementPatternList (te::Edit&
+                              //, juce::ReferenceCountedObjectPtr<ArrangementSection> arrangementSection
+                              , const juce::ValueTree&
+                              , juce::UndoManager*);
         ~ArrangementPatternList() override;
 
         bool isSuitableType (const juce::ValueTree&) const override;
@@ -32,6 +35,7 @@ namespace styler_app
 
     private:
         te::Edit& mEdit;
+        //juce::ReferenceCountedObjectPtr<ArrangementSection> mSection;
         
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ArrangementPatternList)
     };

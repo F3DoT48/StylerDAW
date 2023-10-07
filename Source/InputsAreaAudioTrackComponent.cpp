@@ -18,10 +18,20 @@ using namespace styler_app;
 InputsAreaAudioTrackComponent::InputsAreaAudioTrackComponent (EditViewState& editViewState, te::Track::Ptr track)
     : TrackComponent (editViewState, track)
     , mAudioTrack{ dynamic_cast<te::AudioTrack*> (track.get())}
+    , mNameLabel {"Track name", mAudioTrack->getName()}
     , mDeleteTrackButton ("Delete track")
     , mMidiInputSelectorButton ("Midi in")
     , mAudioInputSelectorButton ("Audio in")
 {
+    mNameLabel.setEditable (true);
+    mNameLabel.setJustificationType (juce::Justification::centred);
+    mNameLabel.onTextChange = [this]()
+    {
+        mAudioTrack->setName (mNameLabel.getText());
+    };
+
+    addAndMakeVisible (mNameLabel);
+
     mDeleteTrackButton.onClick = [this]()
     {
         mEditViewState.mEdit.deleteTrack (getTrack().get());
@@ -39,9 +49,9 @@ InputsAreaAudioTrackComponent::InputsAreaAudioTrackComponent (EditViewState& edi
             {
                 bool isTicked {inputDeviceInstance->isOnTargetTrack (*mAudioTrack)};
                 midiInputMenu.addItem (itemId++
-                                        , inputDeviceInstance->getInputDevice().getName()
-                                        , true
-                                        , isTicked);
+                                     , inputDeviceInstance->getInputDevice().getName()
+                                     , true
+                                     , isTicked);
             }
         }
 
@@ -168,6 +178,7 @@ void InputsAreaAudioTrackComponent::resized()
 {
     auto rectangle{ getLocalBounds()};
 
+    mNameLabel.setBounds (rectangle.removeFromTop (20));
     mDeleteTrackButton.setBounds (rectangle.removeFromTop(20));
     mMidiInputSelectorButton.setBounds (rectangle.removeFromTop (20));
     mAudioInputSelectorButton.setBounds (rectangle.removeFromTop (20));

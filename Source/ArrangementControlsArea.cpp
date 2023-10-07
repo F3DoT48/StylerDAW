@@ -16,7 +16,8 @@ using namespace styler_app;
 
 ArrangementControlsArea::ArrangementControlsArea (Arrangement& arrangement)
     : mArrangement { arrangement }
-    , mUpdateSections { false }
+    , mUpdateSections { true }
+    , mSectionControlsAreas{}
 {
     mArrangement.mState.addListener (this);
 
@@ -95,11 +96,15 @@ void ArrangementControlsArea::buildSections()
 {
     mSectionControlsAreas.clear();
 
-    for (auto section : mArrangement.getAllSections())
+    if (auto& sections { mArrangement.getAllSections() };
+        !sections.isEmpty())
     {
-        auto* tmpSectionControlsComponent { new ArrangementSectionControlsComponent (mArrangement, section) };
-        mSectionControlsAreas.add (tmpSectionControlsComponent);
-        addAndMakeVisible (tmpSectionControlsComponent);
+        for (ArrangementSection::Ptr section : sections)
+        {
+            auto* tmpSectionControlsComponent { new ArrangementSectionControlsComponent (mArrangement, section) };
+            mSectionControlsAreas.add (tmpSectionControlsComponent);
+            addAndMakeVisible (tmpSectionControlsComponent);
+        }
     }
 
     resized();

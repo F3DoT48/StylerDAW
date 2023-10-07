@@ -21,11 +21,15 @@ namespace styler_app
     {
     public:
         ArrangementPattern() = delete;
-        ArrangementPattern (const juce::ValueTree&, juce::UndoManager*);
+        ArrangementPattern (te::Edit&
+                          //, juce::ReferenceCountedObjectPtr<ArrangementSection> arrangementSection
+                          //, te::Track::Ptr
+                          , const juce::ValueTree&
+                          , juce::UndoManager*);
 
         using Ptr = juce::ReferenceCountedObjectPtr<ArrangementPattern>;
 
-        static juce::ValueTree createArrangementPattern (te::EditItemID trackId);
+        static juce::ValueTree createArrangementPattern (const te::EditItemID trackId);
         
         MidiSequence* getMidiSequenceForChannel (int channelIndex);
 
@@ -33,8 +37,11 @@ namespace styler_app
         /* !!! hack for te::ValueTreeUtilities */
         juce::ValueTree& state { mState };
 
+        te::AudioTrack::Ptr getAssociatedAudioTrack() const;
+
     private:
         te::EditItemID mTrackId;
+        te::AudioTrack::Ptr mTrack;
 
         juce::OwnedArray<MidiSequence> mSequences;
         static constexpr int sNumMaxSequences { 16 };

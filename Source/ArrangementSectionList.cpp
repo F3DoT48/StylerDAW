@@ -34,10 +34,15 @@ bool ArrangementSectionList::isSuitableType (const juce::ValueTree& arrSectionSt
 
 ArrangementSection* ArrangementSectionList::createNewObject (const juce::ValueTree& arrSectionState)
 {
-    ArrangementSection::Ptr arrSectionPtr {new ArrangementSection (mEdit, arrSectionState, nullptr)};
+    /*ArrangementSection::Ptr arrSectionPtr {new ArrangementSection (mEdit, arrSectionState, nullptr)};
     arrSectionPtr->incReferenceCount();
 
-    return arrSectionPtr.get();
+    return arrSectionPtr.get();*/
+
+    ArrangementSection* arrSectionPtr { new ArrangementSection (mEdit, arrSectionState, nullptr) };
+    arrSectionPtr->incReferenceCount();
+
+    return arrSectionPtr;
 }
 
 void ArrangementSectionList::deleteObject (ArrangementSection* arrSectionPtr)

@@ -17,29 +17,38 @@ namespace te = tracktion_engine;
 
 namespace styler_app
 {
-
     class MidiNote
     {
     public:
         MidiNote (const juce::ValueTree&);
         ~MidiNote() = default;
 
-        static juce::ValueTree createNote (const MidiNote&);
+        static juce::ValueTree getValueTreeFromNote (const MidiNote&);
+        static juce::ValueTree createNoteValueTree (double startBeat
+                                                  , double lengthInBeats
+                                                  , int noteIndex
+                                                  , int velocity
+                                                  , bool isMute
+                                                  , NoteTranspositionRule::Type transpositionRuleType);
+
 
         void setStartBeat (double newStartBeat, juce::UndoManager*);
-        double getStartBeat() const noexcept;
+        double getStartBeat() const;
 
         void setLengthInBeats (double newLengthInBeats, juce::UndoManager*);
-        double getLengthInBeats() const noexcept;
+        double getLengthInBeats() const;
 
         void setNoteIndex (int newNoteIndex, juce::UndoManager*);
-        int getNoteIndex() const noexcept;
+        int getNoteIndex() const;
 
         void setVelocity (int newVelocity, juce::UndoManager*);
-        int getVelocity() const noexcept;
+        int getVelocity() const;
 
         void setMute (bool shouldMute, juce::UndoManager*);
-        bool isMute() const noexcept;
+        bool isMute() const;
+
+        void setTranspositionType (NoteTranspositionRule::Type newTranspositionType, juce::UndoManager*);
+        NoteTranspositionRule::Type getTranspositionType() const;
 
         juce::ValueTree mState;
 
@@ -50,7 +59,7 @@ namespace styler_app
         friend class MidiSequence;
         double mStartBeat, mLengthInBeats;
         uint8_t mNoteIndex, mVelocity, mIsMute;
-        NoteTranspositionRule* mTranspositionRule;
+        NoteTranspositionRule::Type mTranspositionRuleType;
 
         void updatePropertiesFromState();
 

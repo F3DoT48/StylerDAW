@@ -96,11 +96,15 @@ void ArrangementSectionsArea::buildSections()
 {
     mSections.clear();
 
-    for (auto section : mArrangement.getAllSections())
+    if (auto& sections { mArrangement.getAllSections() };
+        !sections.isEmpty())
     {
-        auto* tmpSectionComponent { new ArrangementSectionComponent (mArrangement, section) };
-        mSections.add (tmpSectionComponent);
-        addAndMakeVisible (tmpSectionComponent);
+        for (ArrangementSection::Ptr section : sections)
+        {
+            auto* tmpSectionComponent { new ArrangementSectionComponent (mArrangement, section) };
+            mSections.add (tmpSectionComponent);
+            addAndMakeVisible (tmpSectionComponent);
+        }
     }
 
     resized();

@@ -19,29 +19,26 @@ Arrangement::Arrangement (te::Edit& edit)
     , mSections {std::make_unique<ArrangementSectionList> (mEdit
                                                          , mState
                                                          , nullptr)}
+    , mController {mState, nullptr}
 {
     jassert (mState.isValid());
 }
 
 juce::ValueTree Arrangement::createArrangement (const te::Edit& edit)
 {
-    //auto valueTree { te::createValueTree (ArrangerIDs::arrangement) };
-
-    //valueTree.appendChild (ArrangementSection::createSection (1, edit), nullptr);
-
-    //juce::ValueTree valueTree (ArrangerIDs::arrangement);
-
-    return juce::ValueTree ( ArrangerIDs::arrangement );
+    return te::createValueTree (ArrangerIDs::arrangement 
+                              , ArrangerIDs::splitNoteIndex, 30 // F# after two octaves
+                              , ArrangerIDs::keyNoteIndex, 0); // C/Am
 }
 
-te::Edit& Arrangement::getEdit() noexcept
+te::Edit& Arrangement::getEdit()
 {
     return mEdit;
 }
 
 void Arrangement::addNewSection()
 {
-    if (mSections->size() < sMaxNumArrangementParts)
+    if (mSections->size() < sMaxNumArrangementSections)
     {
         mState.appendChild (ArrangementSection::createSection (mEdit), &mEdit.getUndoManager());
     }
@@ -52,7 +49,13 @@ void Arrangement::removeSection (ArrangementSection* section)
     section->mState.getParent().removeChild (section->mState, &mEdit.getUndoManager());
 }
 
-ArrangementSectionList& Arrangement::getAllSections() noexcept
+ArrangementSectionList& Arrangement::getAllSections()
 {
+    jassert (mSections != nullptr);
     return *mSections;
+}
+
+ArrangementController* Arrangement::getPtrToController()
+{
+    return &mController;
 }
